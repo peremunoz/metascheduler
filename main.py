@@ -1,7 +1,7 @@
 from interfaces.Cluster import Cluster
 from ui.ClusterList import ask_for_cluster
 from utils.ClusterFactory import get_cluster
-from utils.ColorPrinter import print_color
+from utils.ConsoleHelper import print_color
 
 def main():
     """

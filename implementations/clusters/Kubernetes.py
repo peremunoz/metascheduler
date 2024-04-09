@@ -2,7 +2,7 @@ from typing import List
 from interfaces.Cluster import Cluster
 from interfaces.Scheduler import Scheduler
 from ui.SchedulersCheckbox import ask_for_schedulers
-from utils.ColorPrinter import print_color
+from utils.ConsoleHelper import print_color
 from utils.SchedulerFactory import get_scheduler
 
 
