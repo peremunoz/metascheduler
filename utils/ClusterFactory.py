@@ -7,7 +7,7 @@ def get_cluster(cluster_name: str) -> Cluster:
 
     """
     if cluster_name == "Kubernetes":
-        from implementations.clusters.Kubernetes import KubernetesCluster
-        return KubernetesCluster()
+        from implementations.clusters.Kubernetes import Kubernetes
+        return Kubernetes()
     else:
         raise ValueError("Cluster not implemented")
