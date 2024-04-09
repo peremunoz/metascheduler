@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 inquirer = "*"
 rich = "*"
+kubernetes = "*"
 
 [dev-packages]
 
