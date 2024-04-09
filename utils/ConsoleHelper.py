@@ -8,3 +8,11 @@ def print_color(text: str, color: str, end='\n') -> None:
     """
     console = Console()
     console.print(Text(text, style=f"bold {color}"), end=end)
+
+def clear_console() -> None:
+    """
+    Clears the console.
+
+    """
+    console = Console()
+    console.clear()
