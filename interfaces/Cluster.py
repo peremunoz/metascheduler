@@ -16,6 +16,13 @@ class Cluster:
 
         """
         raise NotImplementedError("Method not implemented")
+    
+    def setup_schedulers():
+        """
+        Sets up the schedulers of the cluster.
+        
+        """
+        raise NotImplementedError("Method not implemented")
 
     def connect(self):
         """
