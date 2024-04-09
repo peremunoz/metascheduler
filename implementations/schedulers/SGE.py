@@ -7,4 +7,4 @@ class SGE(Scheduler):
     
     """
     def __str__(self):
-        return "SGE Scheduler"
+        return "SGE"
