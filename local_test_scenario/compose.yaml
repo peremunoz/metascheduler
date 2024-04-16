@@ -1,0 +1,11 @@
+name: metascheduler-local-test
+
+services:
+  agent:
+    image: agent
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    deploy:
+      mode: replicated
+      replicas: 6
