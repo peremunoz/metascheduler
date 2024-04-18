@@ -1,7 +1,7 @@
 from rich.console import Console
 from rich.text import Text
 
-from interfaces.Cluster import Cluster
+#from interfaces.Cluster import Cluster
 from interfaces.Scheduler import Scheduler
 
 def print_color(text: str, color: str, end='\n') -> None:
@@ -20,20 +20,12 @@ def clear_console() -> None:
     console = Console()
     console.clear()
 
-def print_cluster_selection(cluster: Cluster, color="blue") -> None:
+def print_scheduler_setup(cluster, color="blue") -> None:
     """
-    Prints the selected cluster.
-
-    """
-    print("Selected cluster system: ", end='')
-    print_color(cluster.__str__(), color)
-
-def print_scheduler_selection(cluster: Cluster, color="blue") -> None:
-    """
-    Prints the selected schedulers.
+    Prints the setup schedulers.
     
     """
-    print("Selected schedulers: ", end='')
+    print_color("Schedulers setup: ", color="bold")
     for i, scheduler in enumerate(cluster.get_schedulers()):
         if i == len(cluster.get_schedulers()) - 1:
             print_color(scheduler.__str__(), color, '')
@@ -41,16 +33,11 @@ def print_scheduler_selection(cluster: Cluster, color="blue") -> None:
         else:
             print_color(scheduler.__str__(), color, ', ')
 
-def successful_cluster_setup(cluster: Cluster) -> None:
+def print_node_setup(cluster, color="blue") -> None:
     """
-    Prints a success message for the cluster setup.
-
+    Prints the setup nodes.
+    
     """
-    print_color(f"Successfully set up the {cluster.__str__()} cluster!", "green")
-
-def successful_scheduler_setup(scheduler: Scheduler) -> None:
-    """
-    Prints a success message for the scheduler setup.
-
-    """
-    print_color(f"Successfully set up the {scheduler.__str__()} scheduler!", "green")
+    print_color("Nodes setup: ", color="bold")
+    for i, node in enumerate(cluster.get_nodes()):
+        print_color(f"Node {i + 1}: {node}", color)
