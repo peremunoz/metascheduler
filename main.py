@@ -1,33 +1,32 @@
+from typing import Optional
+from pathlib import Path
+import typer
+from typing_extensions import Annotated
 from interfaces.Cluster import Cluster
-from ui.ClusterList import ask_for_cluster
-from utils.ClusterFactory import get_cluster
-from utils.ConsoleHelper import print_cluster_selection
 
-def main():
+def main(
+        config: Annotated[Optional[Path], typer.Option(
+            help="The config file to read the cluster values from.",
+            exists=True,
+            file_okay=True,
+            dir_okay=False,
+            writable=False,
+            readable=True,
+            resolve_path=True,
+            )] = None
+        ):
     """
     Main function of the program.
 
     """
-    cluster: Cluster = cluster_setup()
-    cluster.setup_schedulers()
+    cluster: Cluster = Cluster()
+    if config is not None:
+        print(f"Reading the cluster config from {config}")
+        cluster.setup_from_file(config)
+    else:
+        cluster.manual_setup()
 
-def cluster_setup() -> Cluster:
-    """
-    Initial setup of the cluster.
-
-    """
-    # Ask the user to select a cluster system
-    cluster_system: str = ask_for_cluster()
-
-    # Get the cluster object
-    cluster: Cluster = get_cluster(cluster_system)
-    print_cluster_selection(cluster)
-
-    # Setup the cluster
-    cluster.setup()
-
-    return cluster
     
 
 if __name__ == '__main__':
-    main()
+    typer.run(main)
