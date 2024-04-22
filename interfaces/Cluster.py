@@ -27,10 +27,21 @@ class Cluster:
         json_config = json.loads(file_path.read_text())
 
         nodes = json_config['cluster']['nodes']
-        nodes_list = []
+        nodes_list: List[Node] = []
+        master_node: Node = None
         for node in nodes:
-            nodes_list.append(Node(node['ip'], node['port'], node['user'], node['password']))
+            node_obj = Node(node['ip'], node['port'], node['user'], node['password'])
+            nodes_list.append(node_obj)
+            if node['is_master']:
+                master_node = node_obj
+
+        if nodes_list == []:
+            raise ValueError("No nodes found in the config file")
         self._set_nodes(nodes_list)
+        
+        if master_node is None:
+            raise ValueError("Master node not found in the config file")
+        self._set_master(master_node)
 
         schedulers = json_config['cluster']['schedulers']
         schedulers_list = []
