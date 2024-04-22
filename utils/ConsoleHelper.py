@@ -41,3 +41,5 @@ def print_node_setup(cluster, color="blue") -> None:
     print_color("Nodes setup: ", color="bold")
     for i, node in enumerate(cluster.get_nodes()):
         print_color(f"Node {i + 1}: {node}", color)
+        if node == cluster.get_master():
+            print_color(f"Master node {i + 1}: {node}", color)

@@ -100,6 +100,7 @@ class Cluster:
         print_node_setup(self)
         master_node_index: int = int(input("Which is the master node? "))
         self._set_master(self.nodes[master_node_index])
+        print_node_setup(self)
     
     def connect(self):
         """
