@@ -4,6 +4,7 @@ import typer
 from typing_extensions import Annotated
 from interfaces.Cluster import Cluster
 
+
 def main(
         config: Annotated[Optional[Path], typer.Option(
             help="The config file to read the cluster values from.",
@@ -13,8 +14,8 @@ def main(
             writable=False,
             readable=True,
             resolve_path=True,
-            )] = None
-        ):
+        )] = None
+):
     """
     Main function of the program.
 
@@ -26,7 +27,6 @@ def main(
     else:
         cluster.manual_setup()
 
-    
 
 if __name__ == '__main__':
     typer.run(main)

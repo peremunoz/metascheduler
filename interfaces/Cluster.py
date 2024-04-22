@@ -30,7 +30,8 @@ class Cluster:
         nodes_list: List[Node] = []
         master_node: Node = None
         for node in nodes:
-            node_obj = Node(node['ip'], node['port'], node['user'], node['password'])
+            node_obj = Node(node['ip'], node['port'],
+                            node['user'], node['password'])
             nodes_list.append(node_obj)
             if node['is_master']:
                 master_node = node_obj
@@ -38,7 +39,7 @@ class Cluster:
         if nodes_list == []:
             raise ValueError("No nodes found in the config file")
         self._set_nodes(nodes_list)
-        
+
         if master_node is None:
             raise ValueError("Master node not found in the config file")
         self._set_master(master_node)
@@ -60,14 +61,15 @@ class Cluster:
         """
         self._setup_schedulers()
         self._setup_nodes()
-    
+
     def _setup_schedulers(self):
         """
         Sets up the schedulers of the cluster.
-        
+
         """
         all_scheduler_names_str: List[str] = print_available_schedulers()
-        schedulers_selected_options: List[int] = typer.prompt("Enter the options of the schedulers you want to use, separated by commas: ").split(",")
+        schedulers_selected_options: List[int] = typer.prompt(
+            "Enter the options of the schedulers you want to use, separated by commas: ").split(",")
         scheduler_names_str: List[str] = []
         for option in schedulers_selected_options:
             scheduler_names_str.append(all_scheduler_names_str[int(option)])
@@ -80,94 +82,98 @@ class Cluster:
     def _setup_nodes(self):
         """
         Sets up the nodes of the cluster.
-        
+
         """
         nodes_number: int = int(input("Enter the number of nodes: "))
         nodes_list: List[Node] = []
         for i in range(nodes_number):
             ssh_ip: str = input(f"Enter the IP of node {i + 1}: ").strip()
-            ssh_port: str = input(f"Enter the port of node {i + 1} [22]: ").strip()
+            ssh_port: str = input(
+                f"Enter the port of node {i + 1} [22]: ").strip()
             if ssh_port == "":
                 ssh_port = 22
-            ssh_user: str = input(f"Enter the user of node {i + 1} [root]: ").strip()
+            ssh_user: str = input(
+                f"Enter the user of node {i + 1} [root]: ").strip()
             if ssh_user == "":
                 ssh_user = "root"
-            ssh_password: str = input(f"Enter the password of node {i + 1} [root]: ").strip()
+            ssh_password: str = input(
+                f"Enter the password of node {i + 1} [root]: ").strip()
             if ssh_password == "":
                 ssh_password = "root"
-            nodes_list.append(Node(ssh_ip, int(ssh_port), ssh_user, ssh_password))
+            nodes_list.append(
+                Node(ssh_ip, int(ssh_port), ssh_user, ssh_password))
         self._set_nodes(nodes_list)
         print_node_setup(self)
         master_node_index: int = int(input("Which is the master node? "))
         self._set_master(self.nodes[master_node_index])
         print_node_setup(self)
-    
+
     def connect(self):
         """
         Connects to the cluster.
-        
+
         """
         raise NotImplementedError("Method not implemented")
-    
+
     def disconnect(self):
         """
         Disconnects from the cluster.
-        
+
         """
         raise NotImplementedError("Method not implemented")
-    
+
     def is_active(self) -> bool:
         """
         Checks if the cluster is active.
-        
+
         """
         raise NotImplementedError("Method not implemented")
-    
+
     def __str__(self):
         """
         String representation of the cluster.
 
         """
         raise NotImplementedError("Method not implemented")
-    
+
     def get_schedulers(self):
         """
         Gets the schedulers of the cluster.
-        
+
         """
         return self.schedulers
-    
+
     def _set_schedulers(self, schedulers: List[Scheduler]):
         """
         Sets the schedulers of the cluster.
-        
+
         """
         self.schedulers = schedulers
-    
+
     def get_nodes(self) -> List[Node]:
         """
         Gets the nodes of the cluster.
-        
+
         """
         return self.nodes
-    
+
     def _set_nodes(self, nodes: List[Node]):
         """
         Sets the nodes of the cluster.
-        
+
         """
         self.nodes = nodes
-    
+
     def get_master(self) -> Node:
         """
         Gets the master node of the cluster.
-        
+
         """
         return self.master
-    
+
     def _set_master(self, master: Node):
         """
         Sets the master node of the cluster.
-        
+
         """
         self.master = master

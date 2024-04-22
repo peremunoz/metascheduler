@@ -5,12 +5,14 @@ from utils.CSV_Helper import read_csv
 
 SUPPORTED_SCHEDULERS_CSV = "./data/supported_schedulers.csv"
 
+
 def get_scheduler_options() -> List[str]:
     """
     Returns the available schedulers.
 
     """
     return read_csv(SUPPORTED_SCHEDULERS_CSV)
+
 
 def print_available_schedulers() -> List[str]:
     """
@@ -23,7 +25,7 @@ def print_available_schedulers() -> List[str]:
 
     for i, scheduler in enumerate(get_scheduler_options()):
         table.add_row(scheduler, str(i))
-    
+
     console = Console()
     console.print(table)
 

@@ -31,18 +31,17 @@ class Node:
 
         """
         raise NotImplementedError("Method not implemented")
-    
+
     def disconnect(self):
         """
         Disconnects from the node.
 
         """
         raise NotImplementedError("Method not implemented")
-    
+
     def is_active(self) -> bool:
         """
         Checks if the node is active.
 
         """
         raise NotImplementedError("Method not implemented")
-    
