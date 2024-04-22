@@ -87,6 +87,8 @@ class Cluster:
             nodes_list.append(Node(ssh_ip, int(ssh_port), ssh_user, ssh_password))
         self._set_nodes(nodes_list)
         print_node_setup(self)
+        master_node_index: int = int(input("Which is the master node? "))
+        self._set_master(self.nodes[master_node_index])
     
     def connect(self):
         """
