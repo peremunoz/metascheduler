@@ -15,6 +15,7 @@ class Cluster:
     Interface for a cluster.
 
     """
+    master: Node
     nodes: List[Node]
     schedulers: List[Scheduler]
 
@@ -142,3 +143,17 @@ class Cluster:
         
         """
         self.nodes = nodes
+    
+    def get_master(self) -> Node:
+        """
+        Gets the master node of the cluster.
+        
+        """
+        return self.master
+    
+    def _set_master(self, master: Node):
+        """
+        Sets the master node of the cluster.
+        
+        """
+        self.master = master
