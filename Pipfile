@@ -7,6 +7,7 @@ name = "pypi"
 rich = "*"
 typer = "*"
 fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
 
 [dev-packages]
 
