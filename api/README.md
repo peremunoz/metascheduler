@@ -1,0 +1,1 @@
+The metascheduler API, built with FastAPI, will be the responsible of keeping track the cluster status, including all of its running/pending jobs and queues. It uses a SQLite database to store the information, and it will be accessed by the metascheduler to make decisions about the cluster status, also ensuring the possible concurrent access to the database.
