@@ -3,18 +3,18 @@ class Node:
     Interface for a node.
 
     """
-    ssh_ip: str
-    ssh_port: int
+    ip: str
+    port: int
     ssh_user: str
     ssh_password: str
 
-    def __init__(self, ssh_ip: str, ssh_port: int, ssh_user: str, ssh_password: str) -> None:
+    def __init__(self, ip: str, port: int, ssh_user: str, ssh_password: str) -> None:
         """
         Constructor.
 
         """
-        self.ssh_ip = ssh_ip
-        self.ssh_port = ssh_port
+        self.ip = ip
+        self.port = port
         self.ssh_user = ssh_user
         self.ssh_password = ssh_password
 
