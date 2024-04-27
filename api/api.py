@@ -11,7 +11,30 @@ app = FastAPI()
 @app.get("/")
 @app.get("/status")
 def read_status():
-    return {"status": "ok"}
+    return {"status": "running", "root": AppConfig().root}
+
+
+@app.get("/nodes")
+def read_nodes():
+    return AppConfig().nodes
+
+
+@app.get("/nodes/{node_id}")
+def read_node(node_id: int):
+    return AppConfig().nodes[node_id]
+
+
+@app.get("/nodes/{node_id}/is_alive")
+def read_node_is_alive(node_id: int):
+    try:
+        return AppConfig().nodes[node_id].is_alive()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@app.get("/master")
+def read_master_node():
+    return AppConfig().master_node
 
 
 def main(
