@@ -1,3 +1,4 @@
+import os
 import json
 from pathlib import Path
 from typing import Any, List
@@ -8,11 +9,13 @@ from interfaces.Node import Node
 class AppConfig(metaclass=Singleton):
 
     _config: Any
+    root: bool
     nodes: List[Node]
     master_node: Node
 
     def __init__(self, config_file: Path = None) -> None:
         if (config_file):
+            self.root = os.geteuid() == 0
             self._load_config(config_file)
             self._load_nodes()
         else:
