@@ -28,9 +28,11 @@ class AppConfig(metaclass=Singleton):
     def _load_nodes(self) -> None:
         nodes = self._config['cluster']['nodes']
         nodes_list: List[Node] = []
+        node_id = 0
         for node in nodes:
-            node_obj = Node(node['ip'], node['port'],
+            node_obj = Node(node_id, node['ip'], node['port'],
                             node['user'], node['password'])
             nodes_list.append(node_obj)
+            node_id += 1
         self.nodes = nodes_list
         self.master_node = nodes_list[0]
