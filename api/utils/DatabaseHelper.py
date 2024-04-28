@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 from interfaces.Job import Job
 from utils.Singleton import Singleton
 import sqlite3
@@ -32,7 +33,8 @@ class DatabaseHelper(metaclass=Singleton):
                           (job.name, job.scheduler.__str__(), job.created_at))
         self._con.commit()
 
-    def get_jobs(self):
+    def get_jobs(self) -> List[Job]:
         self._refresh_connection()
         self._cur.execute("SELECT * FROM jobs")
-        return self._cur.fetchall()
+        rows = self._cur.fetchall()
+        return [Job(*row) for row in rows]

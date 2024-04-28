@@ -21,11 +21,10 @@ def read_jobs():
     return DatabaseHelper().get_jobs()
 
 
-@router.post("")
+@router.post("", status_code=201)
 def create_job(job: JobModel):
     try:
-        job_obj = Job(job.name, get_scheduler(job.scheduler))
-        DatabaseHelper().insert_job(job_obj)
-        return {"job": job_obj}
+        DatabaseHelper().insert_job(Job(job.name, get_scheduler(job.scheduler)))
+        return {"status": "success", "message": "Job created successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
