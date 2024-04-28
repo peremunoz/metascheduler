@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 import typer
 from typing_extensions import Annotated
 from config.config import AppConfig
@@ -16,20 +16,23 @@ def read_status():
 
 @app.get("/nodes")
 def read_nodes():
-    return AppConfig().nodes
+    return [{"id": node.id, "ip": node.ip, "port": node.port, "ssh_user": node.ssh_user, "is_alive": node.is_alive()} for node in AppConfig().nodes]
 
 
 @app.get("/nodes/{node_id}")
 def read_node(node_id: int):
-    return AppConfig().nodes[node_id]
+    if node_id >= len(AppConfig().nodes):
+        raise HTTPException(status_code=404, detail="Node not found")
 
+    node = AppConfig().nodes[node_id]
 
-@app.get("/nodes/{node_id}/is_alive")
-def read_node_is_alive(node_id: int):
-    try:
-        return AppConfig().nodes[node_id].is_alive()
-    except Exception as e:
-        return {"error": str(e)}
+    return {
+        "id": node.id,
+        "ip": node.ip,
+        "port": node.port,
+        "ssh_user": node.ssh_user,
+        "is_alive": node.is_alive()
+    }
 
 
 @app.get("/master")
