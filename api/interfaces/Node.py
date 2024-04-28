@@ -30,13 +30,17 @@ class Node:
         """
         return f"IP: {self.ip}, Port: {self.port}, User: {self.ssh_user}, Password: {self.ssh_password}"
 
-    def is_alive(self) -> bool:
+    def is_alive(self) -> bool | None:
         """
         [ROOT REQUIRED]
         Check if the node is alive.
 
         Returns:
             bool: True if the node is alive, False otherwise.
+            None: If the api is not running as root.
 
         """
-        return ping(self.ip, count=1).is_alive
+        try:
+            return ping(self.ip, count=1).is_alive
+        except Exception as e:
+            return None
