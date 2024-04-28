@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from interfaces.Job import Job
@@ -23,6 +23,9 @@ def read_jobs():
 
 @router.post("")
 def create_job(job: JobModel):
-    job_obj = Job(job.name, get_scheduler(job.scheduler))
-    DatabaseHelper().insert_job(job_obj)
-    return {"job": job_obj}
+    try:
+        job_obj = Job(job.name, get_scheduler(job.scheduler))
+        DatabaseHelper().insert_job(job_obj)
+        return {"job": job_obj}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
