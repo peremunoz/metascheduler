@@ -3,7 +3,7 @@ from interfaces.Job import Job
 from utils.Singleton import Singleton
 import sqlite3
 
-DEFAULT_DATABASE_FILE = Path("job_queue.db")
+DEFAULT_DATABASE_FILE = Path("./db/db.sqlite3")
 
 
 class DatabaseHelper(metaclass=Singleton):
