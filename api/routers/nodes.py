@@ -24,12 +24,11 @@ async def read_master_node():
 async def read_node(node_id: int):
     if node_id >= len(AppConfig().nodes):
         raise HTTPException(status_code=404, detail="Node not found")
-
     node = AppConfig().nodes[node_id]
 
     return {
         "id": node.id,
         "ip": node.ip,
         "port": node.port,
-        "is_alive": node.is_alive()
+        "is_alive": node.is_alive
     }
