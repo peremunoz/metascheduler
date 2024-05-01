@@ -107,3 +107,9 @@ class DatabaseHelper(metaclass=Singleton):
         if row is None:
             raise Exception(f"Job not found")
         return Job(*row)
+
+    def update_job(self, job_id: int, owner: str, job: Job) -> None:
+        self._refresh_connection()
+        self._cur.execute(
+            "UPDATE jobs SET name = ?, queue_id = ? WHERE id = ? AND owner = ?", (job.name, job.queue, job_id, owner))
+        self._con.commit()
