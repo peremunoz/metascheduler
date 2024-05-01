@@ -4,8 +4,13 @@ from api.interfaces.Job import Job
 from api.interfaces.Scheduler import Scheduler
 from api.utils.Singleton import Singleton
 import sqlite3
+import os
 
-DEFAULT_DATABASE_FILE = Path("./db/db.sqlite3")
+DEFAULT_DATABASE_FILE = ''
+if (os.environ.get('TESTING')):
+    DEFAULT_DATABASE_FILE = Path("./db/test_db.sqlite3")
+else:
+    DEFAULT_DATABASE_FILE = Path("./db/db.sqlite3")
 
 
 class DatabaseHelper(metaclass=Singleton):
