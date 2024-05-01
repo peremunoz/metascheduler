@@ -113,3 +113,9 @@ class DatabaseHelper(metaclass=Singleton):
         self._cur.execute(
             "UPDATE jobs SET name = ?, queue_id = ? WHERE id = ? AND owner = ?", (job.name, job.queue, job_id, owner))
         self._con.commit()
+
+    def delete_job(self, job_id: int, owner: str) -> None:
+        self._refresh_connection()
+        self._cur.execute(
+            "DELETE FROM jobs WHERE id = ? AND owner = ?", (job_id, owner))
+        self._con.commit()
