@@ -23,6 +23,14 @@ def read_jobs(owner: str):
     return DatabaseHelper().get_jobs(owner)
 
 
+@router.get("/{job_id}")
+def read_job(job_id: int, owner: str):
+    try:
+        return DatabaseHelper().get_job(job_id, owner)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
 @router.post("", status_code=201)
 def create_job(job: PostJobModel):
     try:
