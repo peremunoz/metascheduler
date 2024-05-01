@@ -1,5 +1,7 @@
 from pathlib import Path
 from typing import List
+from api.classes.ApacheHadoop import ApacheHadoop
+from api.classes.SGE import SGE
 from api.interfaces.Job import Job
 from api.interfaces.Scheduler import Scheduler
 from api.utils.Singleton import Singleton
@@ -15,7 +17,9 @@ else:
 
 class DatabaseHelper(metaclass=Singleton):
 
-    def __init__(self, schedulers: List[Scheduler], database_file: Path = None) -> None:
+    def __init__(self, schedulers: List[Scheduler] = None, database_file: Path = None) -> None:
+        if (os.environ.get('TESTING') == 'true'):
+            schedulers = [ApacheHadoop(), SGE()]
         if not schedulers:
             raise Exception(
                 "At least one scheduler must be provided in database initialization")
@@ -55,6 +59,14 @@ class DatabaseHelper(metaclass=Singleton):
     def _refresh_connection(self) -> None:
         self._con = sqlite3.connect(self._db_file)
         self._cur = self._con.cursor()
+
+    def reset_database_for_testing(self) -> None:
+        self._refresh_connection()
+        self._cur.execute("DROP TABLE IF EXISTS jobs")
+        self._cur.execute("DROP TABLE IF EXISTS queues")
+        self._con.commit()
+        self._create_tables()
+        self._insert_default_queues([ApacheHadoop(), SGE()])
 
     def insert_job(self, job: Job) -> None:
         self._refresh_connection()
