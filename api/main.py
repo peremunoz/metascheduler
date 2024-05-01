@@ -1,21 +1,15 @@
-import os
-import sys
-
-cwd = os.getcwd()
-sys.path.append(cwd)
-
 from pathlib import Path
 from fastapi import FastAPI
 import typer
 from typing_extensions import Annotated
 from api.config.config import AppConfig
-from api.routers import nodes, jobs
+from api.routers import jobs, cluster
 
 
 app = FastAPI()
 
-app.include_router(nodes.router)
 app.include_router(jobs.router)
+app.include_router(cluster.router)
 
 
 @app.get("/")
