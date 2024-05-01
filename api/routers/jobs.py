@@ -16,6 +16,11 @@ class PostJobModel(BaseModel):
     owner: str
 
 
+class PutJobModel(BaseModel):
+    name: str
+    queue: int
+
+
 @router.get("")
 def read_jobs(owner: str):
     if owner == 'root':
@@ -36,5 +41,15 @@ def create_job(job: PostJobModel):
     try:
         DatabaseHelper().insert_job(Job(name=job.name, queue=job.queue, owner=job.owner))
         return {"status": "success", "message": "Job created successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/{job_id}")
+def update_job(job_id: int, owner: str, job: PutJobModel):
+    read_job(job_id, owner)
+    try:
+        DatabaseHelper().update_job(job_id, owner, Job(name=job.name, queue=job.queue))
+        return {"status": "success", "message": "Job updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
