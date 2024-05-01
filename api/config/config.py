@@ -38,8 +38,7 @@ class AppConfig(metaclass=Singleton):
         nodes_list: List[Node] = []
         node_id = 0
         for node in nodes:
-            node_obj = Node(node_id, node['ip'], node['port'],
-                            node['user'], node['password'])
+            node_obj = Node(node_id, node['ip'], node['port'])
             nodes_list.append(node_obj)
             node_id += 1
         self.nodes = nodes_list
