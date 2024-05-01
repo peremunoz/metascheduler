@@ -9,6 +9,7 @@ class Node:
     id: int
     ip: str
     port: int
+    is_alive: bool | None
 
     def __init__(self, id: int, ip: str, port: int) -> None:
         """
@@ -18,6 +19,7 @@ class Node:
         self.id = id
         self.ip = ip
         self.port = port
+        self.is_alive = self.is_alive()
 
     def __str__(self) -> str:
         """
