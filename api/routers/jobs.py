@@ -17,8 +17,10 @@ class JobModel(BaseModel):
 
 
 @router.get("")
-def read_jobs():
-    return DatabaseHelper().get_jobs()
+def read_jobs(owner: str):
+    if owner == 'root':
+        return DatabaseHelper().get_jobs()
+    return DatabaseHelper().get_jobs(owner)
 
 
 @router.post("", status_code=201)
