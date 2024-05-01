@@ -174,6 +174,102 @@ def test_read_jobs_by_queue(client):
     assert response.status_code == 422
 
 
+def test_read_jobs_by_owner_status(client):
+    response = client.post("/jobs", json=test_job_1)
+    assert response.status_code == 201
+    response = client.post("/jobs", json=test_job_2)
+    assert response.status_code == 201
+    response = client.post("/jobs", json=test_job_3)
+    assert response.status_code == 201
+
+    response = client.get(
+        "/jobs", params={"owner": "owner1", "status": JobStatus.QUEUED.value})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["name"] == test_job_1["name"]
+    assert response.json()[0]["queue"] == test_job_1["queue"]
+    assert response.json()[0]["owner"] == test_job_1["owner"]
+
+    response = client.get(
+        "/jobs", params={"owner": "owner2", "status": JobStatus.QUEUED.value})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["name"] == test_job_2["name"]
+    assert response.json()[0]["queue"] == test_job_2["queue"]
+    assert response.json()[0]["owner"] == test_job_2["owner"]
+
+    response = client.get(
+        "/jobs", params={"owner": "owner3", "status": JobStatus.QUEUED.value})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["name"] == test_job_3["name"]
+    assert response.json()[0]["queue"] == test_job_3["queue"]
+    assert response.json()[0]["owner"] == test_job_3["owner"]
+
+    response = client.get(
+        "/jobs", params={"owner": "owner4", "status": JobStatus.QUEUED.value})
+    assert response.status_code == 200
+    assert response.json() == []
+
+    response = client.get(
+        "/jobs", params={"owner": "owner1", "status": JobStatus.RUNNING.value})
+    assert response.status_code == 200
+    assert response.json() == []
+
+    response = client.get(
+        "/jobs", params={"owner": "owner2", "status": JobStatus.RUNNING.value})
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_read_jobs_by_owner_status_queue(client):
+    response = client.post("/jobs", json=test_job_1)
+    assert response.status_code == 201
+    response = client.post("/jobs", json=test_job_2)
+    assert response.status_code == 201
+    response = client.post("/jobs", json=test_job_3)
+    assert response.status_code == 201
+
+    response = client.get(
+        "/jobs", params={"owner": "owner1", "status": JobStatus.QUEUED.value, "queue": 1})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["name"] == test_job_1["name"]
+    assert response.json()[0]["queue"] == test_job_1["queue"]
+    assert response.json()[0]["owner"] == test_job_1["owner"]
+
+    response = client.get(
+        "/jobs", params={"owner": "owner2", "status": JobStatus.QUEUED.value, "queue": 1})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["name"] == test_job_2["name"]
+    assert response.json()[0]["queue"] == test_job_2["queue"]
+    assert response.json()[0]["owner"] == test_job_2["owner"]
+
+    response = client.get(
+        "/jobs", params={"owner": "owner3", "status": JobStatus.QUEUED.value, "queue": 2})
+    assert response.status_code == 200
+    assert len(response.json()) == 1
+    assert response.json()[0]["name"] == test_job_3["name"]
+    assert response.json()[0]["queue"] == test_job_3["queue"]
+    assert response.json()[0]["owner"] == test_job_3["owner"]
+
+    response = client.get(
+        "/jobs", params={"owner": "owner4", "status": JobStatus.QUEUED.value, "queue": 1})
+    assert response.status_code == 200
+    assert response.json() == []
+
+    response = client.get(
+        "/jobs", params={"owner": "owner1", "status": JobStatus.RUNNING.value, "queue": 1})
+    assert response.status_code == 200
+    assert response.json() == []
+
+    response = client.get(
+        "/jobs", params={"owner": "owner2", "status": JobStatus.RUNNING.value, "queue": 1})
+    assert response.status_code == 200
+    assert response.json() == []
+
+
 def test_read_job(client):
     response = client.post("/jobs", json=test_job_1)
     assert response.status_code == 201
