@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-class JobModel(BaseModel):
+class PostJobModel(BaseModel):
     name: str
     queue: int
     owner: str
@@ -24,7 +24,7 @@ def read_jobs(owner: str):
 
 
 @router.post("", status_code=201)
-def create_job(job: JobModel):
+def create_job(job: PostJobModel):
     try:
         DatabaseHelper().insert_job(Job(name=job.name, queue=job.queue, owner=job.owner))
         return {"status": "success", "message": "Job created successfully"}
