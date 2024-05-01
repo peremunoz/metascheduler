@@ -20,7 +20,9 @@ class DatabaseHelper(metaclass=Singleton):
             (id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
             scheduler TEXT NOT NULL,
-            created_at DATETIME NOT NULL)''')
+            created_at DATETIME NOT NULL,
+            owner TEXT NOT NULL,
+            status TEXT NOT NULL)''')
         self._con.commit()
 
     def _refresh_connection(self) -> None:
@@ -29,8 +31,8 @@ class DatabaseHelper(metaclass=Singleton):
 
     def insert_job(self, job: Job) -> None:
         self._refresh_connection()
-        self._cur.execute("INSERT INTO jobs (name, scheduler, created_at) VALUES (?, ?, ?)",
-                          (job.name, job.scheduler.__str__(), job.created_at))
+        self._cur.execute("INSERT INTO jobs (name, scheduler, created_at, owner, status) VALUES (?, ?, ?, ?, ?)",
+                          (job.name, job.scheduler.__str__(), job.created_at, job.owner, job.status))
         self._con.commit()
 
     def get_jobs(self) -> List[Job]:
