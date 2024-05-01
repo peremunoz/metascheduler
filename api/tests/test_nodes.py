@@ -1,7 +1,7 @@
 import json
 
 
-config_file = open("config/test.config", "r")
+config_file = open("config/test_config.json", "r")
 config = json.load(config_file)
 test_nodes = config['cluster']['nodes']
 

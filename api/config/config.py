@@ -21,7 +21,7 @@ class AppConfig(metaclass=Singleton):
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
         if (os.environ.get('TESTING') == 'true'):
-            config_file = Path("./config/test.config")
+            config_file = Path("./config/test_config.json")
         if (config_file):
             self.root = os.geteuid() == 0
             self._load_config(config_file)
