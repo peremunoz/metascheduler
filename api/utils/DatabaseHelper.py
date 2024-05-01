@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import List
 from api.classes.ApacheHadoop import ApacheHadoop
 from api.classes.SGE import SGE
+from api.constants.JobStatus import JobStatus
 from api.interfaces.Job import Job
 from api.interfaces.Scheduler import Scheduler
 from api.utils.Singleton import Singleton
@@ -88,15 +89,28 @@ class DatabaseHelper(metaclass=Singleton):
             raise Exception(f"Queue {queue_name} not found")
         return row[0]
 
-    def get_jobs(self, owner: str = None) -> List[Job]:
+    def get_jobs(self, status: JobStatus = None, queue: int = None, owner: str = None) -> List[Job]:
         self._refresh_connection()
-        if owner:
-            self._cur.execute(
-                "SELECT * FROM jobs WHERE owner = ?", (owner,))
+        query = "SELECT * FROM jobs"
+        params = []
+        if owner and owner != "root":
+            query += " WHERE owner = ?"
+            params.append(owner)
+            if status:
+                query += " AND status = ?"
+                params.append(status.value)
+            if queue:
+                query += " AND queue_id = ?"
+                params.append(queue)
         else:
-            self._cur.execute("SELECT * FROM jobs")
+            if status:
+                query += " WHERE status = ?"
+                params.append(status.value)
+            if queue:
+                query += " WHERE queue_id = ?"
+                params.append(queue)
+        self._cur.execute(query, params)
         rows = self._cur.fetchall()
-        print(rows)
         return [Job(*row) for row in rows]
 
     def get_job(self, job_id: int, owner: str) -> Job:
