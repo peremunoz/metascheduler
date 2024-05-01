@@ -98,3 +98,12 @@ class DatabaseHelper(metaclass=Singleton):
         rows = self._cur.fetchall()
         print(rows)
         return [Job(*row) for row in rows]
+
+    def get_job(self, job_id: int, owner: str) -> Job:
+        self._refresh_connection()
+        self._cur.execute(
+            "SELECT * FROM jobs WHERE id = ? AND owner = ?", (job_id, owner,))
+        row = self._cur.fetchone()
+        if row is None:
+            raise Exception(f"Job not found")
+        return Job(*row)
