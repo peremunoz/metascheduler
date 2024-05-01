@@ -7,7 +7,7 @@ test_nodes = config['cluster']['nodes']
 
 
 def test_read_nodes(client):
-    response = client.get("/nodes")
+    response = client.get("/cluster/nodes")
     assert response.status_code == 200
     assert len(response.json()) == len(test_nodes)
     for i in range(len(test_nodes)):
@@ -18,7 +18,7 @@ def test_read_nodes(client):
 
 
 def test_read_master_node(client):
-    response = client.get("/nodes/master")
+    response = client.get("/cluster/nodes/master")
     assert response.status_code == 200
     assert response.json()['id'] == 0
     assert response.json()['ip'] == test_nodes[0]['ip']
@@ -28,7 +28,7 @@ def test_read_master_node(client):
 
 def test_read_node(client):
     for i in range(len(test_nodes)):
-        response = client.get(f"/nodes/{i}")
+        response = client.get(f"/cluster/nodes/{i}")
         assert response.status_code == 200
         assert response.json()['id'] == i
         assert response.json()['ip'] == test_nodes[i]['ip']
@@ -36,4 +36,4 @@ def test_read_node(client):
         assert response.json()['is_alive'] == False or True or None
     response = client.get(f"/nodes/{len(test_nodes)}")
     assert response.status_code == 404
-    assert response.json()['detail'] == "Node not found"
+    assert response.json()['detail'] == "Not Found"
