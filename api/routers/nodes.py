@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from config.config import AppConfig
+from api.config.config import AppConfig
 
 
 router = APIRouter(

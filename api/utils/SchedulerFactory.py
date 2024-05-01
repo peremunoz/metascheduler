@@ -4,10 +4,10 @@ def get_scheduler(scheduler_name: str):
 
     """
     if scheduler_name == "Apache Hadoop":
-        from classes.ApacheHadoop import ApacheHadoop
+        from ..classes.ApacheHadoop import ApacheHadoop
         return ApacheHadoop()
     elif scheduler_name == "SGE":
-        from classes.SGE import SGE
+        from ..classes.SGE import SGE
         return SGE()
     else:
         raise ValueError("Scheduler not implemented")

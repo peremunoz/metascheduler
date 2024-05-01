@@ -2,11 +2,11 @@ import os
 import json
 from pathlib import Path
 from typing import Any, List
-from utils.DatabaseHelper import DatabaseHelper
-from interfaces.Scheduler import Scheduler
-from utils.SchedulerFactory import get_scheduler
-from utils.Singleton import Singleton
-from interfaces.Node import Node
+from api.utils.DatabaseHelper import DatabaseHelper
+from api.interfaces.Scheduler import Scheduler
+from api.utils.SchedulerFactory import get_scheduler
+from api.utils.Singleton import Singleton
+from api.interfaces.Node import Node
 
 
 class AppConfig(metaclass=Singleton):
@@ -18,6 +18,8 @@ class AppConfig(metaclass=Singleton):
     schedulers: List[Scheduler]
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
+        if (os.environ.get('TESTING') == 'true'):
+            config_file = Path("./config/test.config")
         if (config_file):
             self.root = os.geteuid() == 0
             self._load_config(config_file)

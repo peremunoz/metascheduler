@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from interfaces.Job import Job
-from utils.DatabaseHelper import DatabaseHelper
+from api.interfaces.Job import Job
+from api.utils.DatabaseHelper import DatabaseHelper
 
 router = APIRouter(
     prefix="/jobs",

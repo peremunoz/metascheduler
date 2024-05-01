@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import List
-from interfaces.Job import Job
-from interfaces.Scheduler import Scheduler
-from utils.Singleton import Singleton
+from api.interfaces.Job import Job
+from api.interfaces.Scheduler import Scheduler
+from api.utils.Singleton import Singleton
 import sqlite3
 
 DEFAULT_DATABASE_FILE = Path("./db/db.sqlite3")

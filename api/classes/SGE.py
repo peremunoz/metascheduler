@@ -1,4 +1,4 @@
-from interfaces.Scheduler import Scheduler
+from api.interfaces.Scheduler import Scheduler
 
 
 class SGE(Scheduler):
