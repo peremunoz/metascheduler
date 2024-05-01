@@ -25,6 +25,7 @@ class DatabaseHelper(metaclass=Singleton):
                 "At least one scheduler must be provided in database initialization")
         self._db_file = database_file or DEFAULT_DATABASE_FILE
         self._con = sqlite3.connect(self._db_file)
+        self._con.execute("PRAGMA foreign_keys = ON")
         self._cur = self._con.cursor()
         self._create_tables()
         self._insert_default_queues(schedulers)
@@ -58,6 +59,7 @@ class DatabaseHelper(metaclass=Singleton):
 
     def _refresh_connection(self) -> None:
         self._con = sqlite3.connect(self._db_file)
+        self._con.execute("PRAGMA foreign_keys = ON")
         self._cur = self._con.cursor()
 
     def reset_database_for_testing(self) -> None:
@@ -69,10 +71,13 @@ class DatabaseHelper(metaclass=Singleton):
         self._insert_default_queues([ApacheHadoop(), SGE()])
 
     def insert_job(self, job: Job) -> None:
-        self._refresh_connection()
-        self._cur.execute("INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)",
-                          (job.queue, job.name, job.created_at, job.owner, job.status))
-        self._con.commit()
+        try:
+            self._refresh_connection()
+            self._cur.execute("INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)",
+                              (job.queue, job.name, job.created_at, job.owner, job.status))
+            self._con.commit()
+        except sqlite3.IntegrityError:
+            raise Exception(f"Queue {job.queue} not found")
 
     def get_queue_id(self, queue_name: str) -> int:
         self._refresh_connection()
@@ -83,9 +88,13 @@ class DatabaseHelper(metaclass=Singleton):
             raise Exception(f"Queue {queue_name} not found")
         return row[0]
 
-    def get_jobs(self) -> List[Job]:
+    def get_jobs(self, owner: str = None) -> List[Job]:
         self._refresh_connection()
-        self._cur.execute("SELECT * FROM jobs")
+        if owner:
+            self._cur.execute(
+                "SELECT * FROM jobs WHERE owner = ?", (owner,))
+        else:
+            self._cur.execute("SELECT * FROM jobs")
         rows = self._cur.fetchall()
         print(rows)
         return [Job(*row) for row in rows]
