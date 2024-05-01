@@ -121,3 +121,57 @@ def test_read_job(client):
     response = client.get("/jobs/2", params={"owner": "owner2"})
     assert response.status_code == 404
     assert response.json() == {"detail": "Job not found"}
+
+
+def test_update_job(client):
+    response = client.post("/jobs", json=test_job_1)
+    assert response.status_code == 201
+
+    response = client.put(
+        "/jobs/1", params={"owner": "owner1"}, json={"name": "job1_updated", "queue": 2})
+    assert response.status_code == 200
+    assert response.json() == {"status": "success",
+                               "message": "Job updated successfully"}
+
+    response = client.get("/jobs/1", params={"owner": "owner1"})
+    assert response.status_code == 200
+    assert response.json()["name"] == "job1_updated"
+    assert response.json()["queue"] == 2
+    assert response.json()["owner"] == "owner1"
+
+    response = client.post("/jobs", json=test_job_2)
+    assert response.status_code == 201
+
+    response = client.put(
+        "/jobs/2", params={"owner": "owner2"}, json={"name": "job2_updated", "queue": 2})
+    assert response.status_code == 200
+    assert response.json() == {"status": "success",
+                               "message": "Job updated successfully"}
+
+    response = client.get("/jobs/2", params={"owner": "owner2"})
+    assert response.status_code == 200
+    assert response.json()["name"] == "job2_updated"
+    assert response.json()["queue"] == 2
+    assert response.json()["owner"] == "owner2"
+
+    response = client.put(
+        "/jobs/2", params={"owner": "owner1"}, json={"name": "job2_updated", "queue": 2})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.put(
+        "/jobs/2", params={"owner": "owner2"}, json={"name": "job2_updated_again", "queue": 1})
+    assert response.status_code == 200
+    assert response.json() == {"status": "success",
+                               "message": "Job updated successfully"}
+
+    response = client.get("/jobs/2", params={"owner": "owner2"})
+    assert response.status_code == 200
+    assert response.json()["name"] == "job2_updated_again"
+    assert response.json()["queue"] == 1
+    assert response.json()["owner"] == "owner2"
+
+    response = client.put(
+        "/jobs/3", params={"owner": "owner3"}, json={"name": "job3_updated", "queue": 1})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
