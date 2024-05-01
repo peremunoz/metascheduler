@@ -175,3 +175,53 @@ def test_update_job(client):
         "/jobs/3", params={"owner": "owner3"}, json={"name": "job3_updated", "queue": 1})
     assert response.status_code == 404
     assert response.json() == {"detail": "Job not found"}
+
+
+def test_delete_job(client):
+    response = client.post("/jobs", json=test_job_1)
+    assert response.status_code == 201
+
+    response = client.delete("/jobs/1", params={"owner": "owner1"})
+    assert response.status_code == 200
+    assert response.json() == {"status": "success",
+                               "message": "Job deleted successfully"}
+
+    response = client.get("/jobs/1", params={"owner": "owner1"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.delete("/jobs/1", params={"owner": "owner1"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.post("/jobs", json=test_job_2)
+    assert response.status_code == 201
+
+    response = client.delete("/jobs/2", params={"owner": "owner2"})
+    assert response.status_code == 200
+    assert response.json() == {"status": "success",
+                               "message": "Job deleted successfully"}
+
+    response = client.get("/jobs/2", params={"owner": "owner2"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.delete("/jobs/3", params={"owner": "owner3"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.delete("/jobs/1", params={"owner": "owner2"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.delete("/jobs/2", params={"owner": "owner1"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.delete("/jobs/3", params={"owner": "owner4"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
+
+    response = client.delete("/jobs/4", params={"owner": "owner3"})
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Job not found"}
