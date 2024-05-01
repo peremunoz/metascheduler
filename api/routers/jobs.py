@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from api.constants.JobStatus import JobStatus
 from api.interfaces.Job import Job
 from api.utils.DatabaseHelper import DatabaseHelper
 
@@ -47,7 +48,10 @@ def create_job(job: PostJobModel):
 
 @router.put("/{job_id}")
 def update_job(job_id: int, owner: str, job: PutJobModel):
-    read_job(job_id, owner)
+    stored_job = read_job(job_id, owner)
+    if stored_job.status != JobStatus.QUEUED.value:
+        raise HTTPException(
+            status_code=400, detail="Only QUEUED jobs can be updated")
     try:
         DatabaseHelper().update_job(job_id, owner, Job(name=job.name, queue=job.queue))
         return {"status": "success", "message": "Job updated successfully"}
