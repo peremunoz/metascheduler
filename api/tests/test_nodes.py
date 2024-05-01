@@ -27,3 +27,16 @@ def test_read_master_node():
     assert response.json()['ip'] == test_nodes[0]['ip']
     assert response.json()['port'] == test_nodes[0]['port']
     assert response.json()['is_alive'] == False or True or None
+
+
+def test_read_node():
+    for i in range(len(test_nodes)):
+        response = client.get(f"/nodes/{i}")
+        assert response.status_code == 200
+        assert response.json()['id'] == i
+        assert response.json()['ip'] == test_nodes[i]['ip']
+        assert response.json()['port'] == test_nodes[i]['port']
+        assert response.json()['is_alive'] == False or True or None
+    response = client.get(f"/nodes/{len(test_nodes)}")
+    assert response.status_code == 404
+    assert response.json()['detail'] == "Node not found"
