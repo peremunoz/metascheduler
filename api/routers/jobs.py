@@ -23,10 +23,8 @@ class PutJobModel(BaseModel):
 
 
 @router.get("")
-def read_jobs(owner: str):
-    if owner == 'root':
-        return DatabaseHelper().get_jobs()
-    return DatabaseHelper().get_jobs(owner)
+def read_jobs(owner: str, status: JobStatus = None, queue: int = None):
+    return DatabaseHelper().get_jobs(owner=owner, status=status, queue=queue)
 
 
 @router.get("/{job_id}")
