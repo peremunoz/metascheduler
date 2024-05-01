@@ -2,6 +2,7 @@ import os
 import json
 from pathlib import Path
 from typing import Any, List
+from api.constants.ClusterMode import ClusterMode
 from api.utils.DatabaseHelper import DatabaseHelper
 from api.interfaces.Scheduler import Scheduler
 from api.utils.SchedulerFactory import get_scheduler
@@ -16,6 +17,7 @@ class AppConfig(metaclass=Singleton):
     nodes: List[Node]
     master_node: Node
     schedulers: List[Scheduler]
+    mode: ClusterMode
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
         if (os.environ.get('TESTING') == 'true'):
@@ -25,6 +27,7 @@ class AppConfig(metaclass=Singleton):
             self._load_config(config_file)
             self._load_nodes()
             self._load_schedulers()
+            self._load_mode()
             self._init_db(database_file)
         else:
             raise Exception(
@@ -51,6 +54,9 @@ class AppConfig(metaclass=Singleton):
             scheduler_obj = get_scheduler(scheduler['name'])
             schedulers_list.append(scheduler_obj)
         self.schedulers = schedulers_list
+
+    def _load_mode(self) -> None:
+        self.mode = ClusterMode(self._config['cluster']['mode'])
 
     def _init_db(self, database_file: Path) -> None:
         DatabaseHelper(self.schedulers, database_file)
