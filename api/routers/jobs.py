@@ -57,3 +57,16 @@ def update_job(job_id: int, owner: str, job: PutJobModel):
         return {"status": "success", "message": "Job updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/{job_id}")
+def delete_job(job_id: int, owner: str):
+    stored_job = read_job(job_id, owner)
+    if stored_job.status != JobStatus.QUEUED.value:
+        raise HTTPException(
+            status_code=400, detail="Only QUEUED jobs can be deleted")
+    try:
+        DatabaseHelper().delete_job(job_id, owner)
+        return {"status": "success", "message": "Job deleted successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
