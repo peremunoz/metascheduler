@@ -17,7 +17,7 @@ class AppConfig(metaclass=Singleton):
     nodes: List[Node]
     master_node: Node
     schedulers: List[Scheduler]
-    mode: ClusterMode
+    _mode: ClusterMode
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
         if (os.environ.get('TESTING') == 'true'):
@@ -56,7 +56,19 @@ class AppConfig(metaclass=Singleton):
         self.schedulers = schedulers_list
 
     def _load_mode(self) -> None:
-        self.mode = ClusterMode(self._config['cluster']['mode'])
+        self._mode = ClusterMode(self._config['cluster']['mode'])
 
     def _init_db(self, database_file: Path) -> None:
         DatabaseHelper(self.schedulers, database_file)
+
+    def _save_config(self) -> None:
+        with open("config/config.json", "w") as config_file:
+            json.dump(self._config, config_file)
+
+    def get_mode(self) -> ClusterMode:
+        return self._mode
+
+    def set_mode(self, mode: ClusterMode) -> None:
+        self._mode = mode
+        self._config['cluster']['mode'] = mode.value
+        self._save_config()
