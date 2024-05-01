@@ -74,7 +74,7 @@ class DatabaseHelper(metaclass=Singleton):
         try:
             self._refresh_connection()
             self._cur.execute("INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)",
-                              (job.queue, job.name, job.created_at, job.owner, job.status))
+                              (job.queue, job.name, job.created_at, job.owner, job.status.value))
             self._con.commit()
         except sqlite3.IntegrityError:
             raise Exception(f"Queue {job.queue} not found")
