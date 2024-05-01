@@ -3,7 +3,6 @@ from pydantic import BaseModel
 
 from interfaces.Job import Job
 from utils.DatabaseHelper import DatabaseHelper
-from utils.SchedulerFactory import get_scheduler
 
 router = APIRouter(
     prefix="/jobs",
