@@ -52,4 +52,4 @@ class AppConfig(metaclass=Singleton):
         self.schedulers = schedulers_list
 
     def _init_db(self, database_file: Path) -> None:
-        DatabaseHelper(database_file)
+        DatabaseHelper(self.schedulers, database_file)
