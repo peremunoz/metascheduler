@@ -269,6 +269,17 @@ def test_read_jobs_by_owner_status_queue(client):
     assert response.status_code == 200
     assert response.json() == []
 
+    response = client.get(
+        "/jobs", params={"owner": "root", "status": JobStatus.QUEUED.value, "queue": 1})
+    assert response.status_code == 200
+    assert len(response.json()) == 2
+    assert response.json()[0]["name"] == test_job_1["name"]
+    assert response.json()[0]["queue"] == test_job_1["queue"]
+    assert response.json()[0]["owner"] == test_job_1["owner"]
+    assert response.json()[1]["name"] == test_job_2["name"]
+    assert response.json()[1]["queue"] == test_job_2["queue"]
+    assert response.json()[1]["owner"] == test_job_2["owner"]
+
 
 def test_read_job(client):
     response = client.post("/jobs", json=test_job_1)

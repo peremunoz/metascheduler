@@ -107,12 +107,14 @@ class DatabaseHelper(metaclass=Singleton):
                 query += " AND queue_id = ?"
                 params.append(queue)
         else:
+            query += " WHERE 1=1"
             if status:
-                query += " WHERE status = ?"
+                query += " AND status = ?"
                 params.append(status.value)
             if queue:
-                query += " WHERE queue_id = ?"
+                query += " AND queue_id = ?"
                 params.append(queue)
+
         self._cur.execute(query, params)
         rows = self._cur.fetchall()
         return [Job(*row) for row in rows]
