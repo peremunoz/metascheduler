@@ -34,8 +34,12 @@ class DatabaseHelper(metaclass=Singleton):
     def _insert_default_queues(self, schedulers: List[Scheduler]) -> None:
         for scheduler in schedulers:
             self._cur.execute(
-                "INSERT INTO queues (name) VALUES (?)", (scheduler.__str__(),))
-        self._con.commit()
+                "SELECT * FROM queues WHERE name = ?", (scheduler.__str__(),))
+            row = self._cur.fetchone()
+            if row is None:
+                self._cur.execute(
+                    "INSERT INTO queues (name) VALUES (?)", (scheduler.__str__(),))
+                self._con.commit()
 
     def _create_tables(self) -> None:
         self._create_queues_table()
