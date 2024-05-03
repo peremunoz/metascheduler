@@ -6,6 +6,7 @@ from api.constants.JobStatus import JobStatus
 from api.interfaces.Job import Job
 from api.interfaces.Scheduler import Scheduler
 from api.utils.Singleton import Singleton
+from api.interfaces.Queue import Queue
 import sqlite3
 import os
 
@@ -139,3 +140,9 @@ class DatabaseHelper(metaclass=Singleton):
         self._cur.execute(
             "DELETE FROM jobs WHERE id = ? AND owner = ?", (job_id, owner))
         self._con.commit()
+
+    def get_queues(self) -> List[Queue]:
+        self._refresh_connection()
+        self._cur.execute("SELECT id, name FROM queues")
+        rows = self._cur.fetchall()
+        return [Queue(*row) for row in rows]
