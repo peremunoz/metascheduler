@@ -3,13 +3,14 @@ from fastapi import FastAPI
 import typer
 from typing_extensions import Annotated
 from api.config.config import AppConfig
-from api.routers import jobs, cluster
+from api.routers import jobs, cluster, queues
 
 
 app = FastAPI()
 
 app.include_router(jobs.router)
 app.include_router(cluster.router)
+app.include_router(queues.router)
 
 
 @app.get("/")
