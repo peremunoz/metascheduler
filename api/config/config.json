@@ -1,0 +1,1 @@
+{"cluster": {"mode": "best_effort", "nodes": [{"ip": "", "port": ""}, {"ip": "", "port": ""}, {"ip": "", "port": ""}, {"ip": "", "port": ""}], "schedulers": [{"name": "Apache Hadoop"}, {"name": "SGE"}]}}
