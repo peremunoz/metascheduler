@@ -1,4 +1,4 @@
-from api.constants.JobStatus import JobStatus
+from api.constants.job_status import JobStatus
 from api.routers.jobs import PostJobModel
 
 test_job_1: PostJobModel = {

@@ -1,4 +1,4 @@
-from api.interfaces.Scheduler import Scheduler
+from api.interfaces.scheduler import Scheduler
 
 
 class Queue:

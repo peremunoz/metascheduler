@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from api.constants.ClusterMode import ClusterMode
+from api.constants.cluster_mode import ClusterMode
 from api.routers import nodes
 from api.config.config import AppConfig
 

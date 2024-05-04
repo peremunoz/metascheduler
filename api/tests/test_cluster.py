@@ -1,6 +1,6 @@
 import json
 from api.routers.cluster import PutClusterModeModel
-from api.constants.ClusterMode import ClusterMode
+from api.constants.cluster_mode import ClusterMode
 
 config_file = open("config/test_config.json", "r")
 config = json.load(config_file)

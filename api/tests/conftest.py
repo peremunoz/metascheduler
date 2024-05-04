@@ -13,5 +13,5 @@ def client():
 @pytest.fixture(autouse=True)
 def reset_database():
     """Reset the database before each test (delete sqlite file)"""
-    from api.utils.DatabaseHelper import DatabaseHelper
+    from api.utils.database_helper import DatabaseHelper
     DatabaseHelper().reset_database_for_testing()

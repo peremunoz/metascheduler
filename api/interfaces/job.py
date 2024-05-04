@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from api.constants.JobStatus import JobStatus
+from api.constants.job_status import JobStatus
 
 
 class Job:

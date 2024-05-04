@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import List
-from api.classes.ApacheHadoop import ApacheHadoop
-from api.classes.SGE import SGE
-from api.constants.JobStatus import JobStatus
-from api.interfaces.Job import Job
-from api.interfaces.Scheduler import Scheduler
-from api.utils.Singleton import Singleton
-from api.interfaces.Queue import Queue
+from api.classes.apache_hadoop import ApacheHadoop
+from api.classes.sge import SGE
+from api.constants.job_status import JobStatus
+from api.interfaces.job import Job
+from api.interfaces.scheduler import Scheduler
+from api.utils.singleton import Singleton
+from api.interfaces.queue import Queue
 import sqlite3
 import os
 
