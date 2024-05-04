@@ -1,3 +1,5 @@
+'''Database helper class.'''
+
 import os
 import sqlite3
 from pathlib import Path
@@ -18,8 +20,22 @@ else:
 
 
 class DatabaseHelper(metaclass=Singleton):
+    '''Database helper class.
+
+    This class is responsible for handling all database operations.
+
+    Attributes:
+        _db_file (Path): The path to the database file.
+        _con (sqlite3.Connection): The connection to the database.
+        _cur (sqlite3.Cursor): The cursor to the database.
+
+    Methods:
+        TODO AT THE END OF THE PROJECT
+    '''
 
     def __init__(self, schedulers: List[Scheduler] = None, database_file: Path = None) -> None:
+        '''Initializes the database helper.'''
+
         if os.environ.get('TESTING') == 'true':
             schedulers = [ApacheHadoop(), SGE()]
         if not schedulers:
@@ -33,6 +49,8 @@ class DatabaseHelper(metaclass=Singleton):
         self._insert_default_queues(schedulers)
 
     def _insert_default_queues(self, schedulers: List[Scheduler]) -> None:
+        '''Inserts the default queues into the database.'''
+
         for scheduler in schedulers:
             self._cur.execute(
                 'SELECT * FROM queues WHERE name = ?', (str(scheduler),))
@@ -43,16 +61,22 @@ class DatabaseHelper(metaclass=Singleton):
                 self._con.commit()
 
     def _create_tables(self) -> None:
+        '''Creates the tables in the database.'''
+
         self._create_queues_table()
         self._create_jobs_table()
 
     def _create_queues_table(self) -> None:
+        '''Creates the queues table in the database.'''
+
         self._cur.execute('''CREATE TABLE IF NOT EXISTS queues
             (id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL)''')
         self._con.commit()
 
     def _create_jobs_table(self) -> None:
+        '''Creates the jobs table in the database.'''
+
         self._cur.execute('''CREATE TABLE IF NOT EXISTS jobs
             (id INTEGER PRIMARY KEY AUTOINCREMENT,
             queue_id INTEGER NOT NULL,
@@ -60,15 +84,19 @@ class DatabaseHelper(metaclass=Singleton):
             created_at DATETIME NOT NULL,
             owner TEXT NOT NULL,
             status TEXT NOT NULL,
-            FOREIGN KEY (queue_id) REFERENCES queues(id))''')
+            FOREIGN KEY(queue_id) REFERENCES queues(id))''')
         self._con.commit()
 
     def _refresh_connection(self) -> None:
+        '''Refreshes the connection to the database.'''
+
         self._con = sqlite3.connect(self._db_file)
         self._con.execute('PRAGMA foreign_keys = ON')
         self._cur = self._con.cursor()
 
     def reset_database_for_testing(self) -> None:
+        '''Resets the database for testing purposes.'''
+
         self._refresh_connection()
         self._cur.execute('DROP TABLE IF EXISTS jobs')
         self._cur.execute('DROP TABLE IF EXISTS queues')
@@ -77,6 +105,8 @@ class DatabaseHelper(metaclass=Singleton):
         self._insert_default_queues([ApacheHadoop(), SGE()])
 
     def insert_job(self, job: Job) -> None:
+        '''Inserts a job into the database.'''
+
         try:
             self._refresh_connection()
             self._cur.execute('INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)',
@@ -86,6 +116,8 @@ class DatabaseHelper(metaclass=Singleton):
             raise Exception(f'Queue {job.queue} not found') from e
 
     def get_queue_id(self, queue_name: str) -> int:
+        '''Gets the ID of a queue by its name.'''
+
         self._refresh_connection()
         self._cur.execute(
             'SELECT id FROM queues WHERE name = ?', (queue_name,))
@@ -95,6 +127,8 @@ class DatabaseHelper(metaclass=Singleton):
         return row[0]
 
     def get_jobs(self, status: JobStatus = None, queue: int = None, owner: str = None) -> List[Job]:
+        '''Gets all jobs from the database that match the given criteria.'''
+
         self._refresh_connection()
         query = 'SELECT * FROM jobs'
         params = []
@@ -121,6 +155,8 @@ class DatabaseHelper(metaclass=Singleton):
         return [Job(*row) for row in rows]
 
     def get_job(self, job_id: int, owner: str) -> Job:
+        '''Gets a job by its ID.'''
+
         self._refresh_connection()
         self._cur.execute(
             'SELECT * FROM jobs WHERE id = ? AND owner = ?', (job_id, owner,))
@@ -130,18 +166,24 @@ class DatabaseHelper(metaclass=Singleton):
         return Job(*row)
 
     def update_job(self, job_id: int, owner: str, job: Job) -> None:
+        '''Updates a job in the database.'''
+
         self._refresh_connection()
         self._cur.execute(
             'UPDATE jobs SET name = ?, queue_id = ? WHERE id = ? AND owner = ?', (job.name, job.queue, job_id, owner))
         self._con.commit()
 
     def delete_job(self, job_id: int, owner: str) -> None:
+        '''Deletes a job from the database.'''
+
         self._refresh_connection()
         self._cur.execute(
             'DELETE FROM jobs WHERE id = ? AND owner = ?', (job_id, owner))
         self._con.commit()
 
     def get_queues(self) -> List[Queue]:
+        '''Gets all queues from the database.'''
+
         self._refresh_connection()
         self._cur.execute('SELECT id, name FROM queues')
         rows = self._cur.fetchall()
