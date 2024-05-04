@@ -15,4 +15,4 @@ sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd
 EXPOSE 22
 
 # Start ssh server
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ['/usr/sbin/sshd', '-D']

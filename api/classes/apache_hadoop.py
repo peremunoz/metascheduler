@@ -1,4 +1,4 @@
-from api.interfaces.Scheduler import Scheduler
+from api.interfaces.scheduler import Scheduler
 
 
 class ApacheHadoop(Scheduler):
@@ -8,4 +8,4 @@ class ApacheHadoop(Scheduler):
     '''
 
     def __str__(self) -> str:
-        return "Apache Hadoop"
+        return 'Apache Hadoop'

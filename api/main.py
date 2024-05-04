@@ -1,6 +1,7 @@
 from pathlib import Path
 from fastapi import FastAPI
 import typer
+import uvicorn
 from typing_extensions import Annotated
 from api.config.config import AppConfig
 from api.routers import jobs, cluster, queues
@@ -42,7 +43,6 @@ def main(
         port: Annotated[int, typer.Option(help='Port to bind to')] = 8000
 ):
     AppConfig(config_file, database_file)
-    import uvicorn
     uvicorn.run(app, host=host, port=port)
 
 
