@@ -1,4 +1,4 @@
-from api.interfaces.Scheduler import Scheduler
+from api.interfaces.scheduler import Scheduler
 
 
 class SGE(Scheduler):
@@ -8,4 +8,4 @@ class SGE(Scheduler):
     '''
 
     def __str__(self) -> str:
-        return "SGE"
+        return 'SGE'
