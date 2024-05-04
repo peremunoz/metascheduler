@@ -4,19 +4,32 @@ from api.routers.jobs import PostJobModel
 test_job_1: PostJobModel = {
     'name': 'job1',
     'queue': 1,
-    'owner': 'owner1'
+    'owner': 'owner1',
+    'path': '/path/to/job1',
+    'options': '--option1 value1 --option2 value2'
 }
 
 test_job_2: PostJobModel = {
     'name': 'job2',
     'queue': 1,
-    'owner': 'owner2'
+    'owner': 'owner2',
+    'path': '/path/to/job2',
+    'options': '--option1 value1 --option2 value2'
 }
 
 test_job_3: PostJobModel = {
     'name': 'job3',
     'queue': 2,
-    'owner': 'owner3'
+    'owner': 'owner3',
+    'path': '/path/to/job3',
+    'options': '--option1 value1 --option2 value2'
+}
+
+test_job_4_no_options: PostJobModel = {
+    'name': 'job4',
+    'queue': 2,
+    'owner': 'owner4',
+    'path': '/path/to/job4'
 }
 
 
@@ -38,6 +51,8 @@ def test_create_job_one(client):
     assert response.json()[0]['name'] == test_job_1['name']
     assert response.json()[0]['queue'] == test_job_1['queue']
     assert response.json()[0]['owner'] == test_job_1['owner']
+    assert response.json()[0]['path'] == test_job_1['path']
+    assert response.json()[0]['options'] == test_job_1['options']
 
 
 def test_create_job_many(client):
@@ -54,17 +69,23 @@ def test_create_job_many(client):
     assert response.json()[0]['name'] == test_job_1['name']
     assert response.json()[0]['queue'] == test_job_1['queue']
     assert response.json()[0]['owner'] == test_job_1['owner']
+    assert response.json()[0]['path'] == test_job_1['path']
+    assert response.json()[0]['options'] == test_job_1['options']
     assert response.json()[1]['name'] == test_job_2['name']
     assert response.json()[1]['queue'] == test_job_2['queue']
     assert response.json()[1]['owner'] == test_job_2['owner']
+    assert response.json()[1]['path'] == test_job_2['path']
+    assert response.json()[1]['options'] == test_job_2['options']
     assert response.json()[2]['name'] == test_job_3['name']
     assert response.json()[2]['queue'] == test_job_3['queue']
     assert response.json()[2]['owner'] == test_job_3['owner']
+    assert response.json()[2]['path'] == test_job_3['path']
+    assert response.json()[2]['options'] == test_job_3['options']
 
 
 def test_create_job_invalid_queue(client):
     response = client.post(
-        '/jobs', json={'name': 'job1', 'queue': 3, 'owner': 'owner1'})
+        '/jobs', json={**test_job_1, 'queue': 3})
     assert response.status_code == 500
     assert response.json() == {'detail': 'Queue 3 not found'}
 
@@ -83,6 +104,8 @@ def test_read_jobs_by_owner(client):
     assert response.json()[0]['name'] == test_job_1['name']
     assert response.json()[0]['queue'] == test_job_1['queue']
     assert response.json()[0]['owner'] == test_job_1['owner']
+    assert response.json()[0]['path'] == test_job_1['path']
+    assert response.json()[0]['options'] == test_job_1['options']
 
     response = client.get('/jobs', params={'owner': 'owner2'})
     assert response.status_code == 200
@@ -90,6 +113,8 @@ def test_read_jobs_by_owner(client):
     assert response.json()[0]['name'] == test_job_2['name']
     assert response.json()[0]['queue'] == test_job_2['queue']
     assert response.json()[0]['owner'] == test_job_2['owner']
+    assert response.json()[0]['path'] == test_job_2['path']
+    assert response.json()[0]['options'] == test_job_2['options']
 
     response = client.get('/jobs', params={'owner': 'owner3'})
     assert response.status_code == 200
@@ -97,6 +122,8 @@ def test_read_jobs_by_owner(client):
     assert response.json()[0]['name'] == test_job_3['name']
     assert response.json()[0]['queue'] == test_job_3['queue']
     assert response.json()[0]['owner'] == test_job_3['owner']
+    assert response.json()[0]['path'] == test_job_3['path']
+    assert response.json()[0]['options'] == test_job_3['options']
 
     response = client.get('/jobs', params={'owner': 'owner4'})
     assert response.status_code == 200
@@ -290,6 +317,8 @@ def test_read_job(client):
     assert response.json()['name'] == test_job_1['name']
     assert response.json()['queue'] == test_job_1['queue']
     assert response.json()['owner'] == test_job_1['owner']
+    assert response.json()['path'] == test_job_1['path']
+    assert response.json()['options'] == test_job_1['options']
 
     response = client.get('/jobs/1', params={'owner': 'owner2'})
     assert response.status_code == 404
@@ -302,6 +331,19 @@ def test_read_job(client):
     response = client.get('/jobs/2', params={'owner': 'owner2'})
     assert response.status_code == 404
     assert response.json() == {'detail': 'Job not found'}
+
+
+def test_read_job_no_options(client):
+    response = client.post('/jobs', json=test_job_4_no_options)
+    assert response.status_code == 201
+
+    response = client.get('/jobs/1', params={'owner': 'owner4'})
+    assert response.status_code == 200
+    assert response.json()['name'] == test_job_4_no_options['name']
+    assert response.json()['queue'] == test_job_4_no_options['queue']
+    assert response.json()['owner'] == test_job_4_no_options['owner']
+    assert response.json()['path'] == test_job_4_no_options['path']
+    assert response.json()['options'] == ''
 
 
 def test_update_job(client):
