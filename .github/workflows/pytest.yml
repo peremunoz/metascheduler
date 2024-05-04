@@ -25,4 +25,5 @@ jobs:
       run: |
         cd api/
         export PYTHONPATH=..
+        export TESTING=1
         pipenv run pytest
