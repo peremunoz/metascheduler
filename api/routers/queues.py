@@ -4,11 +4,11 @@ from api.utils.database_helper import DatabaseHelper
 
 
 router = APIRouter(
-    prefix="/queues",
-    tags=["Queues"],
+    prefix='/queues',
+    tags=['Queues'],
 )
 
 
-@router.get("")
+@router.get('')
 def read_queues():
     return DatabaseHelper().get_queues()

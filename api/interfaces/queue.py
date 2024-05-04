@@ -2,10 +2,10 @@ from api.interfaces.scheduler import Scheduler
 
 
 class Queue:
-    """
+    '''
     Interface for a Queue
 
-    """
+    '''
 
     id: int
     scheduler_name: Scheduler

@@ -12,9 +12,9 @@ from api.interfaces.queue import Queue
 
 DEFAULT_DATABASE_FILE = ''
 if os.environ.get('TESTING'):
-    DEFAULT_DATABASE_FILE = Path("./db/test_db.sqlite3")
+    DEFAULT_DATABASE_FILE = Path('./db/test_db.sqlite3')
 else:
-    DEFAULT_DATABASE_FILE = Path("./db/db.sqlite3")
+    DEFAULT_DATABASE_FILE = Path('./db/db.sqlite3')
 
 
 class DatabaseHelper(metaclass=Singleton):
@@ -24,10 +24,10 @@ class DatabaseHelper(metaclass=Singleton):
             schedulers = [ApacheHadoop(), SGE()]
         if not schedulers:
             raise ValueError(
-                "At least one scheduler must be provided in database initialization")
+                'At least one scheduler must be provided in database initialization')
         self._db_file = database_file or DEFAULT_DATABASE_FILE
         self._con = sqlite3.connect(self._db_file)
-        self._con.execute("PRAGMA foreign_keys = ON")
+        self._con.execute('PRAGMA foreign_keys = ON')
         self._cur = self._con.cursor()
         self._create_tables()
         self._insert_default_queues(schedulers)
@@ -35,11 +35,11 @@ class DatabaseHelper(metaclass=Singleton):
     def _insert_default_queues(self, schedulers: List[Scheduler]) -> None:
         for scheduler in schedulers:
             self._cur.execute(
-                "SELECT * FROM queues WHERE name = ?", (str(scheduler),))
+                'SELECT * FROM queues WHERE name = ?', (str(scheduler),))
             row = self._cur.fetchone()
             if row is None:
                 self._cur.execute(
-                    "INSERT INTO queues (name) VALUES (?)", (str(scheduler),))
+                    'INSERT INTO queues (name) VALUES (?)', (str(scheduler),))
                 self._con.commit()
 
     def _create_tables(self) -> None:
@@ -65,13 +65,13 @@ class DatabaseHelper(metaclass=Singleton):
 
     def _refresh_connection(self) -> None:
         self._con = sqlite3.connect(self._db_file)
-        self._con.execute("PRAGMA foreign_keys = ON")
+        self._con.execute('PRAGMA foreign_keys = ON')
         self._cur = self._con.cursor()
 
     def reset_database_for_testing(self) -> None:
         self._refresh_connection()
-        self._cur.execute("DROP TABLE IF EXISTS jobs")
-        self._cur.execute("DROP TABLE IF EXISTS queues")
+        self._cur.execute('DROP TABLE IF EXISTS jobs')
+        self._cur.execute('DROP TABLE IF EXISTS queues')
         self._con.commit()
         self._create_tables()
         self._insert_default_queues([ApacheHadoop(), SGE()])
@@ -79,41 +79,41 @@ class DatabaseHelper(metaclass=Singleton):
     def insert_job(self, job: Job) -> None:
         try:
             self._refresh_connection()
-            self._cur.execute("INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)",
+            self._cur.execute('INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)',
                               (job.queue, job.name, job.created_at, job.owner, job.status.value))
             self._con.commit()
         except sqlite3.IntegrityError as e:
-            raise Exception(f"Queue {job.queue} not found") from e
+            raise Exception(f'Queue {job.queue} not found') from e
 
     def get_queue_id(self, queue_name: str) -> int:
         self._refresh_connection()
         self._cur.execute(
-            "SELECT id FROM queues WHERE name = ?", (queue_name,))
+            'SELECT id FROM queues WHERE name = ?', (queue_name,))
         row = self._cur.fetchone()
         if row is None:
-            raise Exception(f"Queue {queue_name} not found")
+            raise Exception(f'Queue {queue_name} not found')
         return row[0]
 
     def get_jobs(self, status: JobStatus = None, queue: int = None, owner: str = None) -> List[Job]:
         self._refresh_connection()
-        query = "SELECT * FROM jobs"
+        query = 'SELECT * FROM jobs'
         params = []
-        if owner and owner != "root":
-            query += " WHERE owner = ?"
+        if owner and owner != 'root':
+            query += ' WHERE owner = ?'
             params.append(owner)
             if status:
-                query += " AND status = ?"
+                query += ' AND status = ?'
                 params.append(status.value)
             if queue:
-                query += " AND queue_id = ?"
+                query += ' AND queue_id = ?'
                 params.append(queue)
         else:
-            query += " WHERE 1=1"
+            query += ' WHERE 1=1'
             if status:
-                query += " AND status = ?"
+                query += ' AND status = ?'
                 params.append(status.value)
             if queue:
-                query += " AND queue_id = ?"
+                query += ' AND queue_id = ?'
                 params.append(queue)
 
         self._cur.execute(query, params)
@@ -123,26 +123,26 @@ class DatabaseHelper(metaclass=Singleton):
     def get_job(self, job_id: int, owner: str) -> Job:
         self._refresh_connection()
         self._cur.execute(
-            "SELECT * FROM jobs WHERE id = ? AND owner = ?", (job_id, owner,))
+            'SELECT * FROM jobs WHERE id = ? AND owner = ?', (job_id, owner,))
         row = self._cur.fetchone()
         if row is None:
-            raise Exception("Job not found")
+            raise Exception('Job not found')
         return Job(*row)
 
     def update_job(self, job_id: int, owner: str, job: Job) -> None:
         self._refresh_connection()
         self._cur.execute(
-            "UPDATE jobs SET name = ?, queue_id = ? WHERE id = ? AND owner = ?", (job.name, job.queue, job_id, owner))
+            'UPDATE jobs SET name = ?, queue_id = ? WHERE id = ? AND owner = ?', (job.name, job.queue, job_id, owner))
         self._con.commit()
 
     def delete_job(self, job_id: int, owner: str) -> None:
         self._refresh_connection()
         self._cur.execute(
-            "DELETE FROM jobs WHERE id = ? AND owner = ?", (job_id, owner))
+            'DELETE FROM jobs WHERE id = ? AND owner = ?', (job_id, owner))
         self._con.commit()
 
     def get_queues(self) -> List[Queue]:
         self._refresh_connection()
-        self._cur.execute("SELECT id, name FROM queues")
+        self._cur.execute('SELECT id, name FROM queues')
         rows = self._cur.fetchall()
         return [Queue(*row) for row in rows]

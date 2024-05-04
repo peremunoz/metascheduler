@@ -21,7 +21,7 @@ class AppConfig(metaclass=Singleton):
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
         if os.environ.get('TESTING') == 'true':
-            config_file = Path("./config/test_config.json")
+            config_file = Path('./config/test_config.json')
         if config_file:
             self.root = os.geteuid() == 0
             self._load_config(config_file)
@@ -31,7 +31,7 @@ class AppConfig(metaclass=Singleton):
             self._init_db(database_file)
         else:
             raise ValueError(
-                "Config file not provided on first initialization.")
+                'Config file not provided on first initialization.')
 
     def _load_config(self, config_file: Path):
         self._config = json.loads(config_file.read_text())
@@ -62,7 +62,7 @@ class AppConfig(metaclass=Singleton):
         DatabaseHelper(self.schedulers, database_file)
 
     def _save_config(self) -> None:
-        with open("config/config.json", "w", encoding='utf-8') as config_file:
+        with open('config/config.json', 'w', encoding='utf-8') as config_file:
             json.dump(self._config, config_file)
 
     def get_mode(self) -> ClusterMode:
