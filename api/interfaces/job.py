@@ -19,6 +19,9 @@ class Job:
         self.name = name
         self.created_at = datetime.now() if created_at is None else created_at
         self.owner = owner
-        self.status = status
+        if isinstance(status, JobStatus):
+            self.status = status
+        else:
+            self.status = JobStatus(status)
         self.path = path
         self.options = options

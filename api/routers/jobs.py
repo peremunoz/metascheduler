@@ -20,8 +20,11 @@ class PostJobModel(BaseModel):
 
 
 class PutJobModel(BaseModel):
-    name: str
-    queue: int
+    name: str = None
+    queue: int = None
+    status: JobStatus = None
+    path: str = None
+    options: str = None
 
 
 @router.get('')
@@ -50,11 +53,13 @@ def create_job(job: PostJobModel):
 @router.put('/{job_id}')
 def update_job(job_id: int, owner: str, job: PutJobModel):
     stored_job = read_job(job_id, owner)
-    if stored_job.status != JobStatus.QUEUED.value:
+    if stored_job.status.value is not JobStatus.QUEUED.value:
         raise HTTPException(
             status_code=400, detail='Only QUEUED jobs can be updated')
     try:
-        DatabaseHelper().update_job(job_id, owner, Job(name=job.name, queue=job.queue))
+        DatabaseHelper().update_job(job_id, owner, Job(name=job.name or stored_job.name, queue=job.queue or stored_job.queue,
+                                                       status=job.status or stored_job.status, path=job.path or stored_job.path,
+                                                       options=job.options or stored_job.options))
         return {'status': 'success', 'message': 'Job updated successfully'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -63,7 +68,7 @@ def update_job(job_id: int, owner: str, job: PutJobModel):
 @router.delete('/{job_id}')
 def delete_job(job_id: int, owner: str):
     stored_job = read_job(job_id, owner)
-    if stored_job.status != JobStatus.QUEUED.value:
+    if stored_job.status.value is not JobStatus.QUEUED.value:
         raise HTTPException(
             status_code=400, detail='Only QUEUED jobs can be deleted')
     try:
