@@ -1,7 +1,16 @@
 name: Pytest on API
 
 on:
-    push
+  pull_request:
+    branches:
+      - main
+      - api
+      - client
+  push:
+    branches:
+      - main
+      - api
+      - client
 
 jobs:
   test:
