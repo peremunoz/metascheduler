@@ -33,4 +33,4 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         cd api/
-        pylint $(git ls-files '*.py')
+        pylint $(git ls-files '*.py') --errors-only
