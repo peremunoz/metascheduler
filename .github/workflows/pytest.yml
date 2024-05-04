@@ -23,5 +23,6 @@ jobs:
         pipenv install --dev
     - name: Run tests
       run: |
+        cd api/
         export PYTHONPATH=..
         pipenv run pytest
