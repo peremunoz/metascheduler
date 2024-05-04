@@ -1,3 +1,5 @@
+import os
+import sqlite3
 from pathlib import Path
 from typing import List
 from api.classes.apache_hadoop import ApacheHadoop
@@ -7,11 +9,9 @@ from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
 from api.utils.singleton import Singleton
 from api.interfaces.queue import Queue
-import sqlite3
-import os
 
 DEFAULT_DATABASE_FILE = ''
-if (os.environ.get('TESTING')):
+if os.environ.get('TESTING'):
     DEFAULT_DATABASE_FILE = Path("./db/test_db.sqlite3")
 else:
     DEFAULT_DATABASE_FILE = Path("./db/db.sqlite3")
@@ -20,10 +20,10 @@ else:
 class DatabaseHelper(metaclass=Singleton):
 
     def __init__(self, schedulers: List[Scheduler] = None, database_file: Path = None) -> None:
-        if (os.environ.get('TESTING') == 'true'):
+        if os.environ.get('TESTING') == 'true':
             schedulers = [ApacheHadoop(), SGE()]
         if not schedulers:
-            raise Exception(
+            raise ValueError(
                 "At least one scheduler must be provided in database initialization")
         self._db_file = database_file or DEFAULT_DATABASE_FILE
         self._con = sqlite3.connect(self._db_file)
@@ -35,11 +35,11 @@ class DatabaseHelper(metaclass=Singleton):
     def _insert_default_queues(self, schedulers: List[Scheduler]) -> None:
         for scheduler in schedulers:
             self._cur.execute(
-                "SELECT * FROM queues WHERE name = ?", (scheduler.__str__(),))
+                "SELECT * FROM queues WHERE name = ?", (str(scheduler),))
             row = self._cur.fetchone()
             if row is None:
                 self._cur.execute(
-                    "INSERT INTO queues (name) VALUES (?)", (scheduler.__str__(),))
+                    "INSERT INTO queues (name) VALUES (?)", (str(scheduler),))
                 self._con.commit()
 
     def _create_tables(self) -> None:
@@ -82,8 +82,8 @@ class DatabaseHelper(metaclass=Singleton):
             self._cur.execute("INSERT INTO jobs (queue_id, name, created_at, owner, status) VALUES (?, ?, ?, ?, ?)",
                               (job.queue, job.name, job.created_at, job.owner, job.status.value))
             self._con.commit()
-        except sqlite3.IntegrityError:
-            raise Exception(f"Queue {job.queue} not found")
+        except sqlite3.IntegrityError as e:
+            raise Exception(f"Queue {job.queue} not found") from e
 
     def get_queue_id(self, queue_name: str) -> int:
         self._refresh_connection()
@@ -126,7 +126,7 @@ class DatabaseHelper(metaclass=Singleton):
             "SELECT * FROM jobs WHERE id = ? AND owner = ?", (job_id, owner,))
         row = self._cur.fetchone()
         if row is None:
-            raise Exception(f"Job not found")
+            raise Exception("Job not found")
         return Job(*row)
 
     def update_job(self, job_id: int, owner: str, job: Job) -> None:

@@ -1,9 +1,9 @@
 import json
 from typing import List
 
-config_file = open("config/test_config.json", "r")
-config = json.load(config_file)
-schedulers = config['cluster']['schedulers']
+with open("config/test_config.json", "r", encoding="utf-8") as config_file:
+    config = json.load(config_file)
+    schedulers = config['cluster']['schedulers']
 
 queues_names: List[str] = []
 for scheduler in schedulers:

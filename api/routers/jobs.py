@@ -32,7 +32,7 @@ def read_job(job_id: int, owner: str):
     try:
         return DatabaseHelper().get_job(job_id, owner)
     except Exception as e:
-        raise HTTPException(status_code=404, detail=str(e))
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 
 @router.post("", status_code=201)
@@ -41,7 +41,7 @@ def create_job(job: PostJobModel):
         DatabaseHelper().insert_job(Job(name=job.name, queue=job.queue, owner=job.owner))
         return {"status": "success", "message": "Job created successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.put("/{job_id}")
@@ -54,7 +54,7 @@ def update_job(job_id: int, owner: str, job: PutJobModel):
         DatabaseHelper().update_job(job_id, owner, Job(name=job.name, queue=job.queue))
         return {"status": "success", "message": "Job updated successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.delete("/{job_id}")
@@ -67,4 +67,4 @@ def delete_job(job_id: int, owner: str):
         DatabaseHelper().delete_job(job_id, owner)
         return {"status": "success", "message": "Job deleted successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e

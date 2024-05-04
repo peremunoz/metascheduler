@@ -19,7 +19,7 @@ class Node:
         self.id = id
         self.ip = ip
         self.port = port
-        self.is_alive = self.is_alive()
+        self.is_alive = self._is_alive()
 
     def __str__(self) -> str:
         """
@@ -28,7 +28,7 @@ class Node:
         """
         return f"IP: {self.ip}, Port: {self.port}"
 
-    def is_alive(self) -> bool | None:
+    def _is_alive(self) -> bool | None:
         """
         [ROOT REQUIRED]
         Check if the node is alive.
@@ -40,5 +40,5 @@ class Node:
         """
         try:
             return ping(self.ip, count=1).is_alive
-        except Exception as e:
+        except Exception:
             return None

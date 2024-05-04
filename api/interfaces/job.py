@@ -9,7 +9,9 @@ class Job:
 
     '''
 
-    def __init__(self, id: int = None, queue: int = -1, name: str = None, created_at: datetime = None, owner: str = None, status: JobStatus = JobStatus.QUEUED):
+    def __init__(self, id: int = None, queue: int = -1, name: str = None,
+                 created_at: datetime = None, owner: str = None,
+                 status: JobStatus = JobStatus.QUEUED):
         self.id = id
         self.queue = queue
         self.name = name

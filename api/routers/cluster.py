@@ -28,5 +28,4 @@ def update_cluster_mode(data: PutClusterModeModel):
     if data.user == "root":
         AppConfig().set_mode(data.mode)
         return {"message": "Cluster mode updated"}
-    else:
-        raise HTTPException(status_code=403, detail="Forbidden")
+    raise HTTPException(status_code=403, detail="Forbidden")

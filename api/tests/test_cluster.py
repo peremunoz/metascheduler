@@ -2,9 +2,9 @@ import json
 from api.routers.cluster import PutClusterModeModel
 from api.constants.cluster_mode import ClusterMode
 
-config_file = open("config/test_config.json", "r")
-config = json.load(config_file)
-test_cluster_mode = config['cluster']['mode']
+with open("config/test_config.json", "r", encoding="utf-8") as config_file:
+    config = json.load(config_file)
+    test_cluster_mode = config['cluster']['mode']
 
 root_put_cluster_mode_body: PutClusterModeModel = {
     "user": "root",
