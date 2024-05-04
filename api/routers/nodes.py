@@ -12,13 +12,19 @@ router = APIRouter(
 
 @router.get('')
 async def read_nodes():
-    return [{'id': node.id, 'ip': node.ip, 'port': node.port, 'is_alive': node.is_alive}
+    return [{'id': node.id_, 'ip': node.ip, 'port': node.port, 'is_alive': node.is_alive}
             for node in AppConfig().nodes]
 
 
 @router.get('/master')
 async def read_master_node():
-    return AppConfig().master_node
+    master_node = AppConfig().master_node
+    return {
+        'id': master_node.id_,
+        'ip': master_node.ip,
+        'port': master_node.port,
+        'is_alive': master_node.is_alive
+    }
 
 
 @router.get('/{node_id}')
@@ -28,7 +34,7 @@ async def read_node(node_id: int):
     node = AppConfig().nodes[node_id]
 
     return {
-        'id': node.id,
+        'id': node.id_,
         'ip': node.ip,
         'port': node.port,
         'is_alive': node.is_alive

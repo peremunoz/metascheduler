@@ -11,4 +11,5 @@ router = APIRouter(
 
 @router.get('')
 def read_queues():
-    return DatabaseHelper().get_queues()
+    queues = DatabaseHelper().get_queues()
+    return [{'id': queue.id_, 'scheduler_name': queue.scheduler_name} for queue in queues]
