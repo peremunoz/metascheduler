@@ -16,7 +16,7 @@ class Node:
         Constructor.
 
         '''
-        self.id = id
+        self.id_ = id
         self.ip = ip
         self.port = port
         self.is_alive = self._is_alive()
