@@ -6,17 +6,17 @@ class Node:
     Interface for a node.
 
     '''
-    id: int
+    id_: int
     ip: str
     port: int
     is_alive: bool | None
 
-    def __init__(self, id: int, ip: str, port: int) -> None:
+    def __init__(self, id_: int, ip: str, port: int) -> None:
         '''
         Constructor.
 
         '''
-        self.id = id
+        self.id_ = id_
         self.ip = ip
         self.port = port
         self.is_alive = self._is_alive()

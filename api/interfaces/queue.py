@@ -7,9 +7,9 @@ class Queue:
 
     '''
 
-    id: int
+    id_: int
     scheduler_name: Scheduler
 
-    def __init__(self, id: int = None, scheduler_name: str = None) -> None:
-        self.id = id
+    def __init__(self, id_: int = None, scheduler_name: str = None) -> None:
+        self.id_ = id_
         self.scheduler_name = scheduler_name
