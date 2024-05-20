@@ -8,4 +8,4 @@ class SGE(Scheduler):
     '''
 
     def __str__(self) -> str:
-        return 'SGE'
+        return f'SGE Scheduler: {self.hostname}:{self.port}'

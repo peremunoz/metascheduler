@@ -8,4 +8,4 @@ class ApacheHadoop(Scheduler):
     '''
 
     def __str__(self) -> str:
-        return 'Apache Hadoop'
+        return f'Apache Hadoop Scheduler: {self.hostname}:{self.port}'
