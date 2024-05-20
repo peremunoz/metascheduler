@@ -53,11 +53,11 @@ class DatabaseHelper(metaclass=Singleton):
 
         for scheduler in schedulers:
             self._cur.execute(
-                'SELECT * FROM queues WHERE name = ?', (str(scheduler),))
+                'SELECT * FROM queues WHERE name = ?', (scheduler.name,))
             row = self._cur.fetchone()
             if row is None:
                 self._cur.execute(
-                    'INSERT INTO queues (name) VALUES (?)', (str(scheduler),))
+                    'INSERT INTO queues (name) VALUES (?)', (scheduler.name,))
                 self._con.commit()
 
     def _create_tables(self) -> None:
