@@ -1,5 +1,8 @@
 import threading
-import time
+from time import sleep
+from typing import List
+from api.interfaces.job import Job
+from api.routers.jobs import read_jobs
 from api.utils.singleton import Singleton
 from rich import print
 
@@ -21,7 +24,7 @@ class JobMonitorDaemon(metaclass=Singleton):
     in the application.
     '''
 
-    metascheduler_queue = []
+    metascheduler_queue: List[Job] = []
 
     def __init__(self):
         self._stop_event = threading.Event()
@@ -30,21 +33,24 @@ class JobMonitorDaemon(metaclass=Singleton):
         ''' Start the daemon '''
         log('Starting...')
         while not self._stop_event.is_set():
-            self._monitor_jobs()
-            self._check_queues()
+            self._update_jobs_queue()
+            self._check_scheduler_queues()
             self._make_decisions()
-            time.sleep(5)
+            sleep(5)
 
     def stop(self):
         log(f'Shutting down...')
         self._stop_event.set()
 
-    def _monitor_jobs(self):
-        ''' Monitor the jobs in the database '''
+    def _update_jobs_queue(self):
+        ''' Update the jobs queue '''
         log('Monitoring jobs...')
+        self.metascheduler_queue = read_jobs(
+            owner='root', status=None, queue=None)
+        log(f'Jobs in queue: {len(self.metascheduler_queue)}')
         pass
 
-    def _check_queues(self):
+    def _check_scheduler_queues(self):
         ''' Check the scheduler queues '''
         log('Checking queues...')
         pass
