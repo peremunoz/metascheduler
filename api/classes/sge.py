@@ -7,5 +7,9 @@ class SGE(Scheduler):
 
     '''
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.name = 'SGE'
+
     def __str__(self) -> str:
         return f'SGE Scheduler: {self.hostname}:{self.port}'

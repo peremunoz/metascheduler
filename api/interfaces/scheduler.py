@@ -4,5 +4,6 @@ class Scheduler:
 
     '''
 
+    name: str
     hostname: str
     port: int
