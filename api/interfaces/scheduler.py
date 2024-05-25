@@ -30,3 +30,10 @@ class Scheduler:
 
         '''
         raise NotImplementedError
+
+    def queue_job(self, job: Job):
+        '''
+        Queue a job
+
+        '''
+        raise NotImplementedError
