@@ -20,6 +20,7 @@ class Scheduler:
     def update_job_list(self):
         '''
         Update the job list
+        Also update the job status in the database
 
         '''
         raise NotImplementedError
