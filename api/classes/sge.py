@@ -2,6 +2,10 @@ from typing import List
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
+from api.routers.jobs import PutJobModel
+
+JOB_RUNNING = PutJobModel(status=JobStatus.RUNNING)
+JOB_COMPLETED = PutJobModel(status=JobStatus.COMPLETED)
 
 
 class SGE(Scheduler):
@@ -19,7 +23,8 @@ class SGE(Scheduler):
 
     def update_job_list(self):
         '''
-        Update the job list
+        Update the job list.
+        Also update the job status in the database.
 
         '''
         self.running_jobs = [
@@ -31,6 +36,11 @@ class SGE(Scheduler):
 
         qstat = self._call_qstat()
         jobs = self._parse_qstat(qstat)
+        for job in jobs:
+            if job.status == JobStatus.QUEUED:
+                continue
+            job_update_status = JOB_RUNNING if job.status == JobStatus.RUNNING else JOB_COMPLETED
+            update_job(job.id_, job.owner, job_update_status)
         self.running_jobs = jobs
 
     def get_job_list(self) -> List[Job]:
@@ -54,4 +64,21 @@ class SGE(Scheduler):
         Parse the output of the qstat command
 
         '''
+        raise NotImplementedError
+
+    def queue_job(self, job: Job):
+        '''
+        Queue a job
+
+        '''
+        self._call_qsub(job)
+        self.running_jobs.append(job)
+
+    def _call_qsub(self, job: Job):
+        '''
+        TODO:
+        Call the qsub command to queue the job
+
+        '''
+        return
         raise NotImplementedError
