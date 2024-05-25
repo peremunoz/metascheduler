@@ -4,8 +4,6 @@ import os
 import sqlite3
 from pathlib import Path
 from typing import List
-from api.classes.apache_hadoop import ApacheHadoop
-from api.classes.sge import SGE
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
@@ -37,7 +35,11 @@ class DatabaseHelper(metaclass=Singleton):
         '''Initializes the database helper.'''
 
         if os.environ.get('TESTING') == 'true':
-            schedulers = [ApacheHadoop(), SGE()]
+            from api.classes.apache_hadoop import ApacheHadoop
+            from api.classes.sge import SGE
+            schedulers = []
+            schedulers.append(ApacheHadoop())
+            schedulers.append(SGE())
         if not schedulers:
             raise ValueError(
                 'At least one scheduler must be provided in database initialization')
