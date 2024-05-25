@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
 import threading
 from fastapi import FastAPI
@@ -9,6 +10,7 @@ from api.routers import jobs, cluster, queues
 from api.daemons.job_monitor import JobMonitorDaemon
 
 
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     init_background_daemon()
     yield
