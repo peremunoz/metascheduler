@@ -1,7 +1,9 @@
 import threading
 from time import sleep
 from typing import List
+from api.config.config import AppConfig
 from api.interfaces.job import Job
+from api.interfaces.scheduler import Scheduler
 from api.routers.jobs import read_jobs
 from api.utils.singleton import Singleton
 from rich import print
@@ -24,7 +26,9 @@ class JobMonitorDaemon(metaclass=Singleton):
     in the application.
     '''
 
+    config: AppConfig
     metascheduler_queue: List[Job] = []
+    counter = 0
 
     def __init__(self):
         self._stop_event = threading.Event()
@@ -32,9 +36,10 @@ class JobMonitorDaemon(metaclass=Singleton):
     def start(self):
         ''' Start the daemon '''
         log('Starting...')
+        self.config = AppConfig()
         while not self._stop_event.is_set():
             self._update_jobs_queue()
-            self._check_scheduler_queues()
+            self._update_scheduler_queues()
             self._make_decisions()
             sleep(5)
 
@@ -50,12 +55,26 @@ class JobMonitorDaemon(metaclass=Singleton):
         log(f'Jobs in queue: {len(self.metascheduler_queue)}')
         pass
 
-    def _check_scheduler_queues(self):
-        ''' Check the scheduler queues '''
+    def _update_scheduler_queues(self):
+        ''' Update the scheduler queues '''
         log('Checking queues...')
+        for scheduler in self.config.schedulers:
+            scheduler.update_job_list()
+            log(f'{scheduler.name}: {len(scheduler.get_job_list())} jobs')
         pass
 
     def _make_decisions(self):
         ''' Make decisions based on the monitored jobs and queues '''
         log('Making decisions...')
+        if (self.counter == 1):
+            scheduler = self.config.schedulers[0]
+            scheduler.queue_job(self.metascheduler_queue[0])
+            log(
+                f'Queued job {self.metascheduler_queue[0].name} to {scheduler.name}')
+        if (self.counter == 2):
+            scheduler = self.config.schedulers[0]
+            scheduler.queue_job(self.metascheduler_queue[1])
+            log(
+                f'Queued job {self.metascheduler_queue[1].name} to {scheduler.name}')
+        self.counter += 1
         pass
