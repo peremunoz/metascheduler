@@ -2,10 +2,7 @@ from typing import List
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
-from api.routers.jobs import PutJobModel
-
-JOB_RUNNING = PutJobModel(status=JobStatus.RUNNING)
-JOB_COMPLETED = PutJobModel(status=JobStatus.COMPLETED)
+from api.routers.jobs import update_job_status
 
 
 class SGE(Scheduler):
@@ -27,11 +24,7 @@ class SGE(Scheduler):
         Also update the job status in the database.
 
         '''
-        self.running_jobs = [
-            Job(id_='1', name='job1', owner='root', status=JobStatus.RUNNING),
-            Job(id_='2', name='job2', owner='root', status=JobStatus.QUEUED),
-            Job(id_='3', name='job3', owner='root', status=JobStatus.QUEUED),
-        ]
+        self.running_jobs = []
         return
 
         qstat = self._call_qstat()
@@ -39,8 +32,7 @@ class SGE(Scheduler):
         for job in jobs:
             if job.status == JobStatus.QUEUED:
                 continue
-            job_update_status = JOB_RUNNING if job.status == JobStatus.RUNNING else JOB_COMPLETED
-            update_job(job.id_, job.owner, job_update_status)
+            update_job_status(job.id_, job.owner, job.status)
         self.running_jobs = jobs
 
     def get_job_list(self) -> List[Job]:

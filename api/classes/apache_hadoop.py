@@ -2,10 +2,7 @@ from typing import List
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
-from api.routers.jobs import PutJobModel, update_job
-
-JOB_RUNNING = PutJobModel(status=JobStatus.RUNNING)
-JOB_COMPLETED = PutJobModel(status=JobStatus.COMPLETED)
+from api.routers.jobs import update_job_status
 
 
 class ApacheHadoop(Scheduler):
@@ -52,10 +49,11 @@ class ApacheHadoop(Scheduler):
             self.running_jobs.append(job)
         else:
             ended_job = self.running_jobs[0]
-            update_job(ended_job.id_, ended_job.owner, JOB_COMPLETED)
+            update_job_status(ended_job.id_, ended_job.owner,
+                              JobStatus.COMPLETED)
             self.running_jobs[0] = job
 
-        update_job(job.id_, job.owner, JOB_RUNNING)
+        update_job_status(job.id_, job.owner, JobStatus.RUNNING)
 
     def _call_yarn_jar(self, job: Job):
         '''
