@@ -106,6 +106,8 @@ class DatabaseHelper(metaclass=Singleton):
         self._cur.execute('DROP TABLE IF EXISTS queues')
         self._con.commit()
         self._create_tables()
+        from api.classes.apache_hadoop import ApacheHadoop
+        from api.classes.sge import SGE
         self._insert_default_queues([ApacheHadoop(), SGE()])
 
     def insert_job(self, job: Job) -> None:
