@@ -4,8 +4,6 @@ import os
 import sqlite3
 from pathlib import Path
 from typing import List
-from api.classes.apache_hadoop import ApacheHadoop
-from api.classes.sge import SGE
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
@@ -37,7 +35,11 @@ class DatabaseHelper(metaclass=Singleton):
         '''Initializes the database helper.'''
 
         if os.environ.get('TESTING') == 'true':
-            schedulers = [ApacheHadoop(), SGE()]
+            from api.classes.apache_hadoop import ApacheHadoop
+            from api.classes.sge import SGE
+            schedulers = []
+            schedulers.append(ApacheHadoop())
+            schedulers.append(SGE())
         if not schedulers:
             raise ValueError(
                 'At least one scheduler must be provided in database initialization')
@@ -53,11 +55,11 @@ class DatabaseHelper(metaclass=Singleton):
 
         for scheduler in schedulers:
             self._cur.execute(
-                'SELECT * FROM queues WHERE name = ?', (str(scheduler),))
+                'SELECT * FROM queues WHERE name = ?', (scheduler.name,))
             row = self._cur.fetchone()
             if row is None:
                 self._cur.execute(
-                    'INSERT INTO queues (name) VALUES (?)', (str(scheduler),))
+                    'INSERT INTO queues (name) VALUES (?)', (scheduler.name,))
                 self._con.commit()
 
     def _create_tables(self) -> None:
@@ -104,6 +106,8 @@ class DatabaseHelper(metaclass=Singleton):
         self._cur.execute('DROP TABLE IF EXISTS queues')
         self._con.commit()
         self._create_tables()
+        from api.classes.apache_hadoop import ApacheHadoop
+        from api.classes.sge import SGE
         self._insert_default_queues([ApacheHadoop(), SGE()])
 
     def insert_job(self, job: Job) -> None:

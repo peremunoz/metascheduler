@@ -1,13 +1,22 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
+import threading
 from fastapi import FastAPI
 import typer
 import uvicorn
 from typing_extensions import Annotated
 from api.config.config import AppConfig
 from api.routers import jobs, cluster, queues
+from api.daemons.job_monitor import JobMonitorDaemon
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_background_daemon()
+    yield
+    stop_background_daemon()
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(jobs.router)
 app.include_router(cluster.router)
@@ -44,6 +53,18 @@ def main(
 ):
     AppConfig(config_file, database_file)
     uvicorn.run(app, host=host, port=port)
+
+
+def init_background_daemon():
+    daemon = JobMonitorDaemon()
+    daemon_thread = threading.Thread(target=daemon.start)
+    daemon_thread.daemon = True
+    daemon_thread.start()
+
+
+def stop_background_daemon():
+    daemon = JobMonitorDaemon()
+    daemon.stop()
 
 
 if __name__ == "__main__":

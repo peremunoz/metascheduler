@@ -65,6 +65,20 @@ def update_job(job_id: int, owner: str, job: PutJobModel):
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
+def update_job_status(job_id: int, owner: str, status: JobStatus):
+    ''' Update the status of a job '''
+    stored_job = read_job(job_id, owner)
+    if stored_job.status.value is status.value:
+        return {'status': 'success', 'message': 'Job status not changed'}
+    try:
+        DatabaseHelper().update_job(job_id, owner, Job(name=stored_job.name, queue=stored_job.queue,
+                                                       status=status, path=stored_job.path,
+                                                       options=stored_job.options))
+        return {'status': 'success', 'message': 'Job updated successfully'}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
 @router.delete('/{job_id}')
 def delete_job(job_id: int, owner: str):
     stored_job = read_job(job_id, owner)

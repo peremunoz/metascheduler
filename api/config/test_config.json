@@ -21,10 +21,12 @@
         ],
         "schedulers": [
             {
-                "name": "Apache Hadoop"
+                "name": "Apache Hadoop",
+                "host:port": "localhost:3000"
             },
             {
-                "name": "SGE"
+                "name": "SGE",
+                "host:port": "localhost:3000"
             }
         ]
     }
