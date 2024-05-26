@@ -45,7 +45,7 @@ def create_job(job: PostJobModel):
     try:
         DatabaseHelper().insert_job(Job(name=job.name, queue=job.queue,
                                         owner=job.owner, path=job.path, options=job.options))
-        return {'status': 'success', 'message': 'Job created successfully'}
+        return {'status': 'success', 'message': 'Job created successfully ✅'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
@@ -55,12 +55,12 @@ def update_job(job_id: int, owner: str, job: PutJobModel):
     stored_job = read_job(job_id, owner)
     if stored_job.status.value is not JobStatus.QUEUED.value:
         raise HTTPException(
-            status_code=400, detail='Only QUEUED jobs can be updated')
+            status_code=400, detail='Only QUEUED jobs can be updated 🚫')
     try:
         DatabaseHelper().update_job(job_id, owner, Job(name=job.name or stored_job.name, queue=job.queue or stored_job.queue,
                                                        status=job.status or stored_job.status, path=job.path or stored_job.path,
                                                        options=job.options or stored_job.options))
-        return {'status': 'success', 'message': 'Job updated successfully'}
+        return {'status': 'success', 'message': 'Job updated successfully ✅'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
@@ -74,7 +74,7 @@ def update_job_status(job_id: int, owner: str, status: JobStatus):
         DatabaseHelper().update_job(job_id, owner, Job(name=stored_job.name, queue=stored_job.queue,
                                                        status=status, path=stored_job.path,
                                                        options=stored_job.options))
-        return {'status': 'success', 'message': 'Job updated successfully'}
+        return {'status': 'success', 'message': 'Job updated successfully ✅'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
@@ -84,7 +84,7 @@ def set_job_scheduler_job_id(job_id: int, owner: str, scheduler_job_id: int):
     read_job(job_id, owner)
     try:
         DatabaseHelper().set_job_scheduler_id(job_id, owner, scheduler_job_id)
-        return {'status': 'success', 'message': 'Job updated successfully'}
+        return {'status': 'success', 'message': 'Job updated successfully ✅'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
@@ -94,9 +94,9 @@ def delete_job(job_id: int, owner: str):
     stored_job = read_job(job_id, owner)
     if stored_job.status.value is not JobStatus.QUEUED.value:
         raise HTTPException(
-            status_code=400, detail='Only QUEUED jobs can be deleted')
+            status_code=400, detail='Only QUEUED jobs can be deleted 🚫')
     try:
         DatabaseHelper().delete_job(job_id, owner)
-        return {'status': 'success', 'message': 'Job deleted successfully'}
+        return {'status': 'success', 'message': 'Job deleted successfully ✅'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
