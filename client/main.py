@@ -7,6 +7,7 @@ import client.subcommands.get as get
 import client.subcommands.edit as edit
 import client.subcommands.send as send
 import client.subcommands.delete as delete
+import client.subcommands.watch as watch
 
 app = typer.Typer(no_args_is_help=True)
 app.add_typer(get.app, name='get',
@@ -17,6 +18,8 @@ app.add_typer(send.app, name='send',
               help="Send information to the metascheduler API.")
 app.add_typer(delete.app, name='delete',
               help="Delete information from the metascheduler API.")
+app.add_typer(watch.app, name='watch',
+              help="Watch the metascheduler API. (periodically get information from the API)")
 
 
 def validate_ip(ip: str) -> str:
