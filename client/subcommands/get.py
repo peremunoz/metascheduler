@@ -1,11 +1,21 @@
+from dataclasses import dataclass
 from requests import Response
 import typer
 from rich import print, print_json
 from rich.panel import Panel
+from rich.table import Table
 
 from client.helpers.http_client import HTTP_Client
 
 app = typer.Typer(no_args_is_help=True)
+
+
+@dataclass
+class NodeResponse:
+    id: int
+    ip: str
+    port: int
+    is_alive: bool
 
 
 @app.command()
@@ -17,6 +27,26 @@ def cluster_mode():
         title="[bold magenta]Cluster Information[/bold magenta]",
         border_style="green"
     )
+    print(panel)
+
+
+@app.command()
+def nodes():
+    response: Response = HTTP_Client().get('/cluster/nodes')
+    nodes_raw = response.json()
+    nodes = [NodeResponse(**node) for node in nodes_raw]
+    table = Table(title="Cluster Nodes", show_header=True,
+                  header_style="bold magenta")
+    table.add_column("ID", style="cyan", width=5)
+    table.add_column("IP", style="dim")
+    table.add_column("Port", style="dim")
+    table.add_column("Is Alive", style="dim")
+
+    for node in nodes:
+        table.add_row(str(node.id), node.ip, str(
+            node.port), str(node.is_alive))
+
+    panel = Panel(table, border_style="green")
     print(panel)
 
 
