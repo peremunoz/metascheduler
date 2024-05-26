@@ -85,5 +85,21 @@ def node(node_id: Annotated[int, typer.Argument(help="Node ID")]):
     print(panel)
 
 
+@app.command()
+def queues():
+    response: Response = HTTP_Client().get('/queues')
+    queues = response.json()
+    table = Table(title="Queues", show_header=True,
+                  header_style="bold magenta")
+    table.add_column("ID", style="cyan", width=5)
+    table.add_column("Scheduler Name", style="dim")
+
+    for queue in queues:
+        table.add_row(str(queue['id']), queue['scheduler_name'])
+
+    panel = Panel(table, border_style="green")
+    print(panel)
+
+
 if __name__ == "__main__":
     app()
