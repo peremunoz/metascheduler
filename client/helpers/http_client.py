@@ -59,10 +59,10 @@ class HTTP_Client(metaclass=Singleton):
         self.console.print(panel)
         exit(1)
 
-    def get(self, endpoint):
+    def get(self, endpoint, params=None):
         try:
             response = requests.get(
-                f'http://{self.url}:{self.port}/{endpoint}')
+                f'http://{self.url}:{self.port}/{endpoint}', params=params)
             if response.status_code == 200:
                 return response
             else:
