@@ -2,6 +2,7 @@ from client.helpers.singleton import Singleton
 import requests
 from rich import print
 from rich.console import Console
+from rich.panel import Panel
 
 
 class HTTP_Client(metaclass=Singleton):
@@ -12,7 +13,7 @@ class HTTP_Client(metaclass=Singleton):
 
     def handle_request_error(self, e: requests.exceptions.RequestException):
         if isinstance(e, requests.exceptions.ConnectionError):
-            self.console.print(
+            error_message = (
                 "[bold red]Error: Connection refused[/bold red]\n"
                 "[yellow]Possible reasons:[/yellow]\n"
                 "- The server is not running.\n"
@@ -20,7 +21,7 @@ class HTTP_Client(metaclass=Singleton):
                 "[cyan]Suggestion:[/cyan] Please check the server status and ensure the correct URL and port are specified."
             )
         elif isinstance(e, requests.exceptions.Timeout):
-            self.console.print(
+            error_message = (
                 "[bold red]Error: Timeout[/bold red]\n"
                 "[yellow]Possible reasons:[/yellow]\n"
                 "- The server is taking too long to respond.\n"
@@ -28,12 +29,15 @@ class HTTP_Client(metaclass=Singleton):
                 "[cyan]Suggestion:[/cyan] Try again later or check the server status."
             )
         else:
-            self.console.print(
+            error_message = (
                 "[bold red]Error: Request exception[/bold red]\n"
                 "[yellow]Possible reasons:[/yellow]\n"
                 "- An unexpected error occurred.\n"
                 "[cyan]Suggestion:[/cyan] Check the request and try again."
             )
+        panel = Panel(
+            error_message, title="[bold red]Request Error[/bold red]", border_style="red")
+        self.console.print(panel)
         exit(1)
 
     def get(self, endpoint):
