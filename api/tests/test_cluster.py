@@ -29,7 +29,8 @@ def test_update_cluster_mode(client):
     assert response.json() == test_cluster_mode
     response = client.put('/cluster/mode', json=root_put_cluster_mode_body)
     assert response.status_code == 200
-    assert response.json() == {'message': 'Cluster mode updated'}
+    assert response.json() == {
+        'message': 'Cluster mode updated successfully ✅'}
     response = client.get('/cluster/mode')
     assert response.status_code == 200
     assert response.json() == ClusterMode.BEST_EFFORT.value

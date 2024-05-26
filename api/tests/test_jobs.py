@@ -43,7 +43,7 @@ def test_create_job_one(client):
     response = client.post('/jobs', json=test_job_1)
     assert response.status_code == 201
     assert response.json() == {'status': 'success',
-                               'message': 'Job created successfully'}
+                               'message': 'Job created successfully ✅'}
 
     response = client.get('/jobs', params={'owner': 'root'})
     assert response.status_code == 200
@@ -354,7 +354,7 @@ def test_update_job(client):
         '/jobs/1', params={'owner': 'owner1'}, json={'name': 'job1_updated', 'queue': 2})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
@@ -369,7 +369,7 @@ def test_update_job(client):
         '/jobs/2', params={'owner': 'owner2'}, json={'name': 'job2_updated', 'queue': 2})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/2', params={'owner': 'owner2'})
     assert response.status_code == 200
@@ -386,7 +386,7 @@ def test_update_job(client):
         '/jobs/2', params={'owner': 'owner2'}, json={'name': 'job2_updated_again', 'queue': 1})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/2', params={'owner': 'owner2'})
     assert response.status_code == 200
@@ -409,7 +409,7 @@ def test_update_job_name_only(client):
     print(response.json())
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
@@ -429,7 +429,7 @@ def test_update_job_queue_only(client):
         '/jobs/1', params={'owner': 'owner1'}, json={'queue': 2})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
@@ -450,7 +450,7 @@ def test_update_job_status_only(client):
     print(response.json())
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
@@ -470,7 +470,7 @@ def test_update_job_path_only(client):
         '/jobs/1', params={'owner': 'owner1'}, json={'path': '/path/to/job1_updated'})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
@@ -490,7 +490,7 @@ def test_update_job_options_only(client):
         '/jobs/1', params={'owner': 'owner1'}, json={'options': '--option1 value1_updated --option2 value2_updated'})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job updated successfully'}
+                               'message': 'Job updated successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
@@ -510,7 +510,7 @@ def test_delete_job(client):
     response = client.delete('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job deleted successfully'}
+                               'message': 'Job deleted successfully ✅'}
 
     response = client.get('/jobs/1', params={'owner': 'owner1'})
     assert response.status_code == 404
@@ -526,7 +526,7 @@ def test_delete_job(client):
     response = client.delete('/jobs/2', params={'owner': 'owner2'})
     assert response.status_code == 200
     assert response.json() == {'status': 'success',
-                               'message': 'Job deleted successfully'}
+                               'message': 'Job deleted successfully ✅'}
 
     response = client.get('/jobs/2', params={'owner': 'owner2'})
     assert response.status_code == 404
