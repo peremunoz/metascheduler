@@ -50,5 +50,23 @@ def nodes():
     print(panel)
 
 
+@app.command()
+def master_node():
+    response: Response = HTTP_Client().get('/cluster/nodes/master')
+    master_node = NodeResponse(**response.json())
+    table = Table(title="Master Node", show_header=True,
+                  header_style="bold magenta")
+    table.add_column("ID", style="cyan", width=5)
+    table.add_column("IP", style="dim")
+    table.add_column("Port", style="dim")
+    table.add_column("Is Alive", style="dim")
+
+    table.add_row(str(master_node.id), master_node.ip, str(
+        master_node.port), str(master_node.is_alive))
+
+    panel = Panel(table, border_style="green")
+    print(panel)
+
+
 if __name__ == "__main__":
     app()
