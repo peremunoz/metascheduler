@@ -73,7 +73,8 @@ def nodes():
     print(panel)
 
 
-@app.command()
+@app.command("master")
+@app.command("master-node")
 def master_node():
     response: Response = HTTP_Client().get('/cluster/nodes/master')
     master_node = NodeResponse(**response.json())
