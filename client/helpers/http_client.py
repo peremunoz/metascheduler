@@ -80,3 +80,14 @@ class HTTP_Client(metaclass=Singleton):
                 self.handle_response_error(response)
         except requests.exceptions.RequestException as e:
             self.handle_request_error(e)
+
+    def post(self, endpoint, data):
+        try:
+            response = requests.post(
+                f'http://{self.url}:{self.port}/{endpoint}', json=data)
+            if response.status_code in [200, 201]:
+                return response
+            else:
+                self.handle_response_error(response)
+        except requests.exceptions.RequestException as e:
+            self.handle_request_error(e)
