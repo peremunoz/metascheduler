@@ -79,6 +79,16 @@ def update_job_status(job_id: int, owner: str, status: JobStatus):
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
+def set_job_scheduler_job_id(job_id: int, owner: str, scheduler_job_id: int):
+    ''' Set the scheduler job ID of a job '''
+    read_job(job_id, owner)
+    try:
+        DatabaseHelper().set_job_scheduler_id(job_id, owner, scheduler_job_id)
+        return {'status': 'success', 'message': 'Job updated successfully'}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
 @router.delete('/{job_id}')
 def delete_job(job_id: int, owner: str):
     stored_job = read_job(job_id, owner)
