@@ -40,6 +40,25 @@ class HTTP_Client(metaclass=Singleton):
         self.console.print(panel)
         exit(1)
 
+    def handle_response_error(self, response: requests.Response):
+        if response.status_code == 403:
+            error_message = (
+                "[bold red]Error: 403 Forbidden[/bold red]\n"
+                "[yellow]Possible reasons:[/yellow]\n"
+                "- The user does not have permission to perform the operation.\n"
+                "[cyan]Suggestion:[/cyan] Check the user permissions and try again."
+            )
+        else:
+            error_message = (
+                f"[bold red]Error: {response.status_code}[/bold red]\n"
+                f"[yellow]Response message:[/yellow] {response.text}\n"
+                f"[cyan]Suggestion:[/cyan] Check the request and try again."
+            )
+        panel = Panel(
+            error_message, title="[bold red]Request Error[/bold red]", border_style="red")
+        self.console.print(panel)
+        exit(1)
+
     def get(self, endpoint):
         try:
             response = requests.get(
@@ -47,10 +66,17 @@ class HTTP_Client(metaclass=Singleton):
             if response.status_code == 200:
                 return response
             else:
-                self.console.print(
-                    f"[bold red]Error: {response.status_code}[/bold red]\n"
-                    f"[yellow]Response message:[/yellow] {response.text}\n"
-                    f"[cyan]Suggestion:[/cyan] Check the request and try again."
-                )
+                self.handle_response_error(response)
+        except requests.exceptions.RequestException as e:
+            self.handle_request_error(e)
+
+    def put(self, endpoint, data):
+        try:
+            response = requests.put(
+                f'http://{self.url}:{self.port}/{endpoint}', json=data)
+            if response.status_code == 200:
+                return response
+            else:
+                self.handle_response_error(response)
         except requests.exceptions.RequestException as e:
             self.handle_request_error(e)
