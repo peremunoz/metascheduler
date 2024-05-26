@@ -5,10 +5,12 @@ import typer
 from client.helpers.http_client import HTTP_Client
 import client.subcommands.get as get
 import client.subcommands.set as set
+import client.subcommands.send as send
 
 app = typer.Typer(no_args_is_help=True)
 app.add_typer(get.app, name='get')
 app.add_typer(set.app, name='set')
+app.add_typer(send.app, name='send')
 
 
 def validate_ip(ip: str) -> str:
@@ -39,7 +41,8 @@ def callback(
     os.environ["API_IP"] = ip
     os.environ["API_PORT"] = str(port)
     os.environ["USER"] = os.getlogin()
-    # os.environ["USER"] = "root" # Uncomment this line to test the 403 Forbidden error
+    # Uncomment this line to test the 403 Forbidden error
+    # os.environ["USER"] = "root"
 
 
 if __name__ == "__main__":
