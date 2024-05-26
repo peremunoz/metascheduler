@@ -49,9 +49,13 @@ class HTTP_Client(metaclass=Singleton):
                 "[cyan]Suggestion:[/cyan] Check the user permissions and try again."
             )
         else:
+            try:
+                error_detail = response.json()["detail"]
+            except KeyError:
+                error_detail = response.text
             error_message = (
                 f"[bold red]Error: {response.status_code}[/bold red]\n"
-                f"[yellow]Response message:[/yellow] {response.text}\n"
+                f"[yellow]Response message:[/yellow] {error_detail}\n"
                 f"[cyan]Suggestion:[/cyan] Check the request and try again."
             )
         panel = Panel(
@@ -86,6 +90,17 @@ class HTTP_Client(metaclass=Singleton):
             response = requests.post(
                 f'http://{self.url}:{self.port}/{endpoint}', json=data)
             if response.status_code in [200, 201]:
+                return response
+            else:
+                self.handle_response_error(response)
+        except requests.exceptions.RequestException as e:
+            self.handle_request_error(e)
+
+    def delete(self, endpoint, params=None):
+        try:
+            response = requests.delete(
+                f'http://{self.url}:{self.port}/{endpoint}', params=params)
+            if response.status_code == 200:
                 return response
             else:
                 self.handle_response_error(response)
