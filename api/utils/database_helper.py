@@ -88,6 +88,7 @@ class DatabaseHelper(metaclass=Singleton):
             status TEXT NOT NULL,
             path TEXT NOT NULL,
             options TEXT NOT NULL,
+            scheduler_job_id INTEGER,
             FOREIGN KEY(queue_id) REFERENCES queues(id))''')
         self._con.commit()
 
@@ -115,7 +116,7 @@ class DatabaseHelper(metaclass=Singleton):
 
         try:
             self._refresh_connection()
-            self._cur.execute('INSERT INTO jobs (queue_id, name, created_at, owner, status, path, options) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            self._cur.execute('INSERT INTO jobs (queue_id, name, created_at, owner, status, path, options, scheduler_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
                               (job.queue, job.name, job.created_at, job.owner,
                                job.status.value, str(job.path), job.options))
             self._con.commit()
@@ -195,3 +196,11 @@ class DatabaseHelper(metaclass=Singleton):
         self._cur.execute('SELECT id, name FROM queues')
         rows = self._cur.fetchall()
         return [Queue(*row) for row in rows]
+
+    def set_job_scheduler_id(self, job_id: int, owner: str, scheduler_job_id: int) -> None:
+        '''Sets the scheduler job ID of a job.'''
+
+        self._refresh_connection()
+        self._cur.execute(
+            'UPDATE jobs SET scheduler_job_id = ? WHERE id = ? AND owner = ?', (scheduler_job_id, job_id, owner))
+        self._con.commit()
