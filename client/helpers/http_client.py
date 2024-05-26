@@ -74,10 +74,10 @@ class HTTP_Client(metaclass=Singleton):
         except requests.exceptions.RequestException as e:
             self.handle_request_error(e)
 
-    def put(self, endpoint, data):
+    def put(self, endpoint, data, params=None):
         try:
             response = requests.put(
-                f'http://{self.url}:{self.port}/{endpoint}', json=data)
+                f'http://{self.url}:{self.port}/{endpoint}', json=data, params=params)
             if response.status_code == 200:
                 return response
             else:
