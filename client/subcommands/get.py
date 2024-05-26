@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing_extensions import Annotated
 from requests import Response
 import typer
 from rich import print, print_json
@@ -63,6 +64,22 @@ def master_node():
 
     table.add_row(str(master_node.id), master_node.ip, str(
         master_node.port), str(master_node.is_alive))
+
+    panel = Panel(table, border_style="green")
+    print(panel)
+
+
+@app.command()
+def node(node_id: Annotated[int, typer.Argument(help="Node ID")]):
+    response: Response = HTTP_Client().get(f'/cluster/nodes/{node_id}')
+    node = NodeResponse(**response.json())
+    table = Table(title="Node", show_header=True, header_style="bold magenta")
+    table.add_column("ID", style="cyan", width=5)
+    table.add_column("IP", style="dim")
+    table.add_column("Port", style="dim")
+    table.add_column("Is Alive", style="dim")
+
+    table.add_row(str(node.id), node.ip, str(node.port), str(node.is_alive))
 
     panel = Panel(table, border_style="green")
     print(panel)
