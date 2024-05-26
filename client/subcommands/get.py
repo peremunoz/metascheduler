@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
+from enum import Enum
+import os
 from typing_extensions import Annotated
 from requests import Response
 import typer
@@ -17,6 +20,25 @@ class NodeResponse:
     ip: str
     port: int
     is_alive: bool
+
+
+@dataclass
+class JobResponse:
+    id_: int
+    queue: int
+    name: str
+    created_at: datetime
+    owner: str
+    status: str
+    path: str
+    options: str
+    scheduler_job_id: int
+
+
+class JobStatus(str, Enum):
+    QUEUED = 'QUEUED'
+    RUNNING = 'RUNNING'
+    COMPLETED = 'COMPLETED'
 
 
 @app.command()
@@ -96,6 +118,61 @@ def queues():
 
     for queue in queues:
         table.add_row(str(queue['id']), queue['scheduler_name'])
+
+    panel = Panel(table, border_style="green")
+    print(panel)
+
+
+@app.command()
+def jobs(status: Annotated[JobStatus, typer.Option(help="Job status", case_sensitive=False)] = None, queue: Annotated[int, typer.Option(help="Queue ID")] = None):
+    params = {}
+    params["owner"] = os.getenv("USER")
+    if status:
+        params['status'] = status
+    if queue:
+        params['queue'] = queue
+    response: Response = HTTP_Client().get(
+        '/jobs', params)
+    jobs_raw = response.json()
+    jobs = [JobResponse(**job) for job in jobs_raw]
+    table = Table(title="Jobs", show_header=True, header_style="bold magenta")
+    table.add_column("ID", style="cyan", width=3)
+    table.add_column("Queue", style="dim")
+    table.add_column("Name", style="dim")
+    table.add_column("Created At", style="dim")
+    table.add_column("Owner", style="dim")
+    table.add_column("Status", style="dim")
+    table.add_column("Path", style="dim")
+    table.add_column("Options", style="dim")
+    table.add_column("Scheduler Job ID", style="dim")
+
+    for job in jobs:
+        table.add_row(str(job.id_), str(job.queue), job.name, str(job.created_at),
+                      job.owner, job.status, job.path, job.options, str(job.scheduler_job_id))
+
+    panel = Panel(table, border_style="green")
+    print(panel)
+
+
+@app.command()
+def job(id: Annotated[int, typer.Argument(help="The Job ID")]):
+    params = {}
+    params["owner"] = os.getenv("USER")
+    response: Response = HTTP_Client().get(f'/jobs/{id}', params)
+    job = JobResponse(**response.json())
+    table = Table(title="Job", show_header=True, header_style="bold magenta")
+    table.add_column("ID", style="cyan", width=3)
+    table.add_column("Queue", style="dim")
+    table.add_column("Name", style="dim")
+    table.add_column("Created At", style="dim")
+    table.add_column("Owner", style="dim")
+    table.add_column("Status", style="dim")
+    table.add_column("Path", style="dim")
+    table.add_column("Options", style="dim")
+    table.add_column("Scheduler Job ID", style="dim")
+
+    table.add_row(str(job.id_), str(job.queue), job.name, str(job.created_at),
+                  job.owner, job.status, job.path, job.options, str(job.scheduler_job_id))
 
     panel = Panel(table, border_style="green")
     print(panel)

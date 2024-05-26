@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+import os
 from pathlib import Path
 import threading
 from fastapi import FastAPI
@@ -56,6 +57,8 @@ def main(
 
 
 def init_background_daemon():
+    if os.getenv('TESTING') == 'true':
+        return
     daemon = JobMonitorDaemon()
     daemon_thread = threading.Thread(target=daemon.start)
     daemon_thread.daemon = True
@@ -63,6 +66,8 @@ def init_background_daemon():
 
 
 def stop_background_daemon():
+    if os.getenv('TESTING') == 'true':
+        return
     daemon = JobMonitorDaemon()
     daemon.stop()
 
