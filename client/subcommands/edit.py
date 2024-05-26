@@ -18,8 +18,8 @@ class ClusterMode(str, Enum):
     DYNAMIC = 'dynamic'
 
 
-@app.command()
-def cluster_mode(cluster_mode: Annotated[ClusterMode, typer.Argument(help="Cluster mode", callback=lambda x: x.lower(), case_sensitive=False)]):
+@app.command(help="Edit the cluster working mode.")
+def cluster_mode(cluster_mode: Annotated[ClusterMode, typer.Argument(help="The cluster mode to set the cluster to.", callback=lambda x: x.lower(), case_sensitive=False)]):
     request_data = {
         "user": os.getenv("USER"),
         "mode": cluster_mode
@@ -34,12 +34,15 @@ def cluster_mode(cluster_mode: Annotated[ClusterMode, typer.Argument(help="Clust
     print(panel)
 
 
-@app.command()
-def job(job_id: Annotated[int, typer.Argument(help="Job ID")],
-        queue: Annotated[int, typer.Option(help="Job queue")] = None,
-        name: Annotated[str, typer.Option(help="Job name")] = None,
-        path: Annotated[str, typer.Option(help="Job path")] = None,
-        options: Annotated[str, typer.Option(help="Job options")] = ''):
+@app.command(help="Edit a job.")
+def job(job_id: Annotated[int, typer.Argument(help="The Job ID to edit.")],
+        queue: Annotated[int, typer.Option(
+            help="The queue id to set the job to.")] = None,
+        name: Annotated[str, typer.Option(
+            help="The name to set the job to.")] = None,
+        path: Annotated[str, typer.Option(
+            help="The path to set the job to.")] = None,
+        options: Annotated[str, typer.Option(help="The options to set the job to.")] = ''):
     params = {
         "owner": os.getenv("USER")
     }

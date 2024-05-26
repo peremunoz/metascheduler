@@ -9,11 +9,11 @@ from client.helpers.http_client import HTTP_Client
 app = typer.Typer(no_args_is_help=True)
 
 
-@app.command()
-def job(name: Annotated[str, typer.Option(help="Job name")],
-        queue: Annotated[int, typer.Option(help="Job queue")],
-        path: Annotated[str, typer.Option(help="Job path")],
-        options: Annotated[str, typer.Option(help="Job options")] = ''):
+@app.command(help="Send a job to the metascheduler.")
+def job(name: Annotated[str, typer.Option(help="Job name.")],
+        queue: Annotated[int, typer.Option(help="Job queue.")],
+        path: Annotated[str, typer.Option(help="Job path.")],
+        options: Annotated[str, typer.Option(help="Job options.")] = ''):
     request_data = {
         "name": name,
         "queue": queue,

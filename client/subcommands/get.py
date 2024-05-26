@@ -41,7 +41,7 @@ class JobStatus(str, Enum):
     COMPLETED = 'COMPLETED'
 
 
-@app.command()
+@app.command(help="Get the cluster working mode.")
 def cluster_mode():
     response: Response = HTTP_Client().get('/cluster/mode')
     cluster_mode = response.json()
@@ -53,7 +53,7 @@ def cluster_mode():
     print(panel)
 
 
-@app.command()
+@app.command(help="Get the cluster nodes.")
 def nodes():
     response: Response = HTTP_Client().get('/cluster/nodes')
     nodes_raw = response.json()
@@ -73,8 +73,8 @@ def nodes():
     print(panel)
 
 
-@app.command("master")
-@app.command("master-node")
+@app.command("master", help="Get the master node.")
+@app.command("master-node", hidden=True, help="Get the master node.")
 def master_node():
     response: Response = HTTP_Client().get('/cluster/nodes/master')
     master_node = NodeResponse(**response.json())
@@ -92,7 +92,7 @@ def master_node():
     print(panel)
 
 
-@app.command()
+@app.command(help="Get a node.")
 def node(node_id: Annotated[int, typer.Argument(help="Node ID")]):
     response: Response = HTTP_Client().get(f'/cluster/nodes/{node_id}')
     node = NodeResponse(**response.json())
@@ -108,7 +108,7 @@ def node(node_id: Annotated[int, typer.Argument(help="Node ID")]):
     print(panel)
 
 
-@app.command()
+@app.command(help="Get the queues.")
 def queues():
     response: Response = HTTP_Client().get('/queues')
     queues = response.json()
@@ -124,8 +124,8 @@ def queues():
     print(panel)
 
 
-@app.command()
-def jobs(status: Annotated[JobStatus, typer.Option(help="Job status", case_sensitive=False)] = None, queue: Annotated[int, typer.Option(help="Queue ID")] = None):
+@app.command(help="Get the jobs with optional filters.")
+def jobs(status: Annotated[JobStatus, typer.Option(help="Job status.", case_sensitive=False)] = None, queue: Annotated[int, typer.Option(help="Queue ID.")] = None):
     params = {}
     params["owner"] = os.getenv("USER")
     if status:
@@ -155,8 +155,8 @@ def jobs(status: Annotated[JobStatus, typer.Option(help="Job status", case_sensi
     print(panel)
 
 
-@app.command()
-def job(id: Annotated[int, typer.Argument(help="The Job ID")]):
+@app.command(help="Get a specific job.")
+def job(id: Annotated[int, typer.Argument(help="The Job ID.")]):
     params = {}
     params["owner"] = os.getenv("USER")
     response: Response = HTTP_Client().get(f'/jobs/{id}', params)

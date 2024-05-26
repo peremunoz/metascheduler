@@ -11,8 +11,8 @@ from client.helpers.http_client import HTTP_Client
 app = typer.Typer(no_args_is_help=True)
 
 
-@app.command()
-def job(job_id: Annotated[int, typer.Argument(help="Job ID")]):
+@app.command(help="Delete a job.")
+def job(job_id: Annotated[int, typer.Argument(help="The Job ID to delete")]):
     params = {
         "owner": os.getenv("USER")
     }

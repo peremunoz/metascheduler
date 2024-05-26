@@ -9,10 +9,14 @@ import client.subcommands.send as send
 import client.subcommands.delete as delete
 
 app = typer.Typer(no_args_is_help=True)
-app.add_typer(get.app, name='get')
-app.add_typer(edit.app, name='edit')
-app.add_typer(send.app, name='send')
-app.add_typer(delete.app, name='delete')
+app.add_typer(get.app, name='get',
+              help="Get information from the metascheduler API.")
+app.add_typer(edit.app, name='edit',
+              help="Edit information in the metascheduler API.")
+app.add_typer(send.app, name='send',
+              help="Send information to the metascheduler API.")
+app.add_typer(delete.app, name='delete',
+              help="Delete information from the metascheduler API.")
 
 
 def validate_ip(ip: str) -> str:
