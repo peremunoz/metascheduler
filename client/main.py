@@ -2,6 +2,7 @@ import ipaddress
 import os
 from typing_extensions import Annotated
 import typer
+from client.helpers.http_client import HTTP_Client
 import client.subcommands.get as get
 
 app = typer.Typer(no_args_is_help=True)
@@ -32,6 +33,7 @@ def callback(
         envvar="API_PORT",
     )] = 8000,
 ):
+    HTTP_Client(ip, port)
     os.environ["API_IP"] = ip
     os.environ["API_PORT"] = str(port)
 
