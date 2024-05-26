@@ -4,9 +4,11 @@ from typing_extensions import Annotated
 import typer
 from client.helpers.http_client import HTTP_Client
 import client.subcommands.get as get
+import client.subcommands.set as set
 
 app = typer.Typer(no_args_is_help=True)
 app.add_typer(get.app, name='get')
+app.add_typer(set.app, name='set')
 
 
 def validate_ip(ip: str) -> str:
@@ -36,6 +38,8 @@ def callback(
     HTTP_Client(ip, port)
     os.environ["API_IP"] = ip
     os.environ["API_PORT"] = str(port)
+    os.environ["USER"] = os.getlogin()
+    # os.environ["USER"] = "root" # Uncomment this line to test the 403 Forbidden error
 
 
 if __name__ == "__main__":
