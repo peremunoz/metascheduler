@@ -19,7 +19,8 @@ def job(name: Annotated[str, typer.Option(help="Job name.")],
         "queue": queue,
         "owner": os.getenv("USER"),
         "path": path,
-        "options": options
+        "options": options,
+        "pwd": os.getcwd()
     }
     response = HTTP_Client().post('/jobs', request_data)
     response_message = response.json()["message"]
