@@ -100,7 +100,6 @@ class SGE(Scheduler):
 
     def _call_qsub(self, job: Job) -> int:
         '''
-        TODO:
         Call the qsub command to queue the job
         and return the job id assigned by the scheduler.
 
