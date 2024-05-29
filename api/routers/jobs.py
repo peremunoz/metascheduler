@@ -54,9 +54,9 @@ def create_job(job: PostJobModel):
 @router.put('/{job_id}')
 def update_job(job_id: int, owner: str, job: PutJobModel):
     stored_job = read_job(job_id, owner)
-    if stored_job.status.value is not JobStatus.QUEUED.value:
+    if stored_job.status.value is not JobStatus.TO_BE_QUEUED.value:
         raise HTTPException(
-            status_code=400, detail='Only QUEUED jobs can be updated 🚫')
+            status_code=400, detail='Only TO_BE_QUEUED jobs can be updated 🚫')
     try:
         DatabaseHelper().update_job(job_id, owner, Job(name=job.name or stored_job.name, queue=job.queue or stored_job.queue,
                                                        status=job.status or stored_job.status, path=job.path or stored_job.path,
