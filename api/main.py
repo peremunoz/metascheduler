@@ -49,9 +49,20 @@ def main(
             readable=False,
             resolve_path=True,
         )] = None,
+        ssh_key_file: Annotated[Path, typer.Option(
+            help="The SSH key file to use to connect to the cluster nodes.",
+            exists=False,
+            file_okay=True,
+            dir_okay=False,
+            writable=False,
+            readable=True,
+            resolve_path=True,
+        )] = None,
         host: Annotated[str, typer.Option(help='Host to bind to')] = '0.0.0.0',
         port: Annotated[int, typer.Option(help='Port to bind to')] = 8000
 ):
+    if ssh_key_file:
+        os.environ['SSH_KEY_FILE'] = str(ssh_key_file)
     AppConfig(config_file, database_file)
     uvicorn.run(app, host=host, port=port)
 
