@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
@@ -16,6 +16,8 @@ class SGE(Scheduler):
 
     '''
 
+    _last_job_list_id: List[int] = []
+
     def __init__(self) -> None:
         super().__init__()
         self.name = 'SGE'
@@ -23,25 +25,36 @@ class SGE(Scheduler):
     def __str__(self) -> str:
         return f'SGE Scheduler: {self.hostname}:{self.port}'
 
-    def update_job_list(self):
+    def update_job_list(self, metascheduler_queue: List[Job]):
         '''
-        Update the job list.
+        Update the internal job list.
         Also update the job status in the database.
 
         '''
 
-        # qstat = self._call_qstat()
-        # jobs = self._parse_qstat(qstat)
-        jobs = [
-            Job(id_=1, queue=1, name='claudia',
-                owner='peremunoz', status=JobStatus.RUNNING),
-        ]
-        for job in jobs:
-            if job.status == JobStatus.QUEUED:
+        qstat = self._call_qstat()
+        jobs_id_state: Tuple[str, int] = self._parse_qstat(qstat)
+        actual_jobs: List[Job] = []
+        for job_id_state in jobs_id_state:
+            job = next(
+                (job for job in metascheduler_queue if job.scheduler_job_id == job_id_state[0]), None)
+            if job is None:
                 continue
-            update_job_status(job.id_, job.owner, job.status)
-            set_job_scheduler_job_id(job.id_, job.owner, 14)
-        self.running_jobs = jobs
+            actual_jobs.append(job)
+            if job_id_state[1] == 'qw':
+                update_job_status(job.id_, job.owner, JobStatus.QUEUED)
+            if job_id_state[1] == 'Eqw':
+                update_job_status(job.id_, job.owner, JobStatus.ERROR)
+            if job_id_state[1] == 'r':
+                update_job_status(job.id_, job.owner, JobStatus.RUNNING)
+        ended_jobs_id = [
+            job_id for job_id in self._last_job_list_id if job_id not in [job.scheduler_job_id for job in actual_jobs]]
+        ended_jobs = [
+            job for job in metascheduler_queue if job.scheduler_job_id in ended_jobs_id]
+        for job in ended_jobs:
+            update_job_status(job.id_, job.owner, JobStatus.COMPLETED)
+        self.running_jobs = actual_jobs
+        self._last_job_list_id = [job.scheduler_job_id for job in actual_jobs]
 
     def get_job_list(self) -> List[Job]:
         '''
@@ -52,7 +65,6 @@ class SGE(Scheduler):
 
     def _call_qstat(self) -> str:
         '''
-        TODO:
         Call the qstat command to get the list of jobs
 
         '''
@@ -78,14 +90,30 @@ class SGE(Scheduler):
         Queue a job
 
         '''
-        self._call_qsub(job)
-        self.running_jobs.append(job)
+        try:
+            sge_job_id = self._call_qsub(job)
+            set_job_scheduler_job_id(job.id_, job.owner, sge_job_id)
+            update_job_status(job.id_, job.owner, JobStatus.QUEUED)
+            self.running_jobs.append(job)
+        except Exception as e:
+            raise e
 
-    def _call_qsub(self, job: Job):
+    def _call_qsub(self, job: Job) -> int:
         '''
         TODO:
         Call the qsub command to queue the job
+        and return the job id assigned by the scheduler.
 
         '''
-        return
-        raise NotImplementedError
+        script_path = job.pwd + '/' + job.path
+        message = self.master_node.send_command(
+            f'export SGE_ROOT={SGE_ROOT} && {QSUB} -N {job.name} -o {script_path} -e {script_path} {script_path} {job.options}')
+        assigned_job_id = self._parse_qsub(message)
+        return assigned_job_id
+
+    def _parse_qsub(self, qsub_output) -> int:
+        '''
+        Parse the output of the qsub command
+
+        '''
+        return int(qsub_output.split()[2])
