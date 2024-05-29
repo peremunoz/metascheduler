@@ -24,7 +24,7 @@ class Scheduler:
         '''
         self.master_node = node
 
-    def update_job_list(self):
+    def update_job_list(self, metascheduler_queue: List[Job] = None):
         '''
         Update the job list
         Also update the job status in the database
