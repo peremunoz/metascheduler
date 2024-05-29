@@ -17,6 +17,7 @@ class PostJobModel(BaseModel):
     owner: str
     path: str
     options: str = ''
+    pwd: str = None
 
 
 class PutJobModel(BaseModel):
@@ -44,7 +45,7 @@ def read_job(job_id: int, owner: str):
 def create_job(job: PostJobModel):
     try:
         DatabaseHelper().insert_job(Job(name=job.name, queue=job.queue,
-                                        owner=job.owner, path=job.path, options=job.options))
+                                        owner=job.owner, path=job.path, options=job.options, pwd=job.pwd))
         return {'status': 'success', 'message': 'Job created successfully ✅'}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

@@ -89,6 +89,7 @@ class DatabaseHelper(metaclass=Singleton):
             path TEXT NOT NULL,
             options TEXT NOT NULL,
             scheduler_job_id INTEGER,
+            pwd TEXT,
             FOREIGN KEY(queue_id) REFERENCES queues(id))''')
         self._con.commit()
 
@@ -116,9 +117,9 @@ class DatabaseHelper(metaclass=Singleton):
 
         try:
             self._refresh_connection()
-            self._cur.execute('INSERT INTO jobs (queue_id, name, created_at, owner, status, path, options, scheduler_job_id) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
+            self._cur.execute('INSERT INTO jobs (queue_id, name, created_at, owner, status, path, options, scheduler_job_id, pwd) VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?)',
                               (job.queue, job.name, job.created_at, job.owner,
-                               job.status.value, str(job.path), job.options))
+                               job.status.value, str(job.path), job.options, str(job.pwd)))
             self._con.commit()
         except sqlite3.IntegrityError as e:
             raise Exception(f'Queue {job.queue} not found') from e

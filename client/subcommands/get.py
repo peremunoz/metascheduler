@@ -33,6 +33,7 @@ class JobResponse:
     path: str
     options: str
     scheduler_job_id: int
+    pwd: str
 
 
 class JobStatus(str, Enum):
@@ -146,10 +147,11 @@ def jobs(status: Annotated[JobStatus, typer.Option(help="Job status.", case_sens
     table.add_column("Path", style="dim")
     table.add_column("Options", style="dim")
     table.add_column("Scheduler Job ID", style="dim")
+    table.add_column("PWD", style="dim")
 
     for job in jobs:
         table.add_row(str(job.id_), str(job.queue), job.name, str(job.created_at),
-                      job.owner, job.status, job.path, job.options, str(job.scheduler_job_id))
+                      job.owner, job.status, job.path, job.options, str(job.scheduler_job_id), job.pwd)
 
     panel = Panel(table, border_style="green")
     print(panel)
@@ -171,9 +173,10 @@ def job(id: Annotated[int, typer.Argument(help="The Job ID.")]):
     table.add_column("Path", style="dim")
     table.add_column("Options", style="dim")
     table.add_column("Scheduler Job ID", style="dim")
+    table.add_column("PWD", style="dim")
 
     table.add_row(str(job.id_), str(job.queue), job.name, str(job.created_at),
-                  job.owner, job.status, job.path, job.options, str(job.scheduler_job_id))
+                  job.owner, job.status, job.path, job.options, str(job.scheduler_job_id), job.pwd)
 
     panel = Panel(table, border_style="green")
     print(panel)
