@@ -52,9 +52,11 @@ class AppConfig(metaclass=Singleton):
         schedulers_list: List[Scheduler] = []
         for scheduler in schedulers:
             scheduler_obj = get_scheduler(scheduler['name'])
-            hostname_port = scheduler['host:port'].split(':')
-            scheduler_obj.hostname = hostname_port[0]
-            scheduler_obj.port = int(hostname_port[1])
+            master = scheduler['master']
+            if master:
+                scheduler_obj.set_master_node(self.nodes[int(master)])
+            else:
+                scheduler_obj.set_master_node(self.master_node)
             schedulers_list.append(scheduler_obj)
         self.schedulers = schedulers_list
 
