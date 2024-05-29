@@ -1,4 +1,6 @@
+import os
 from icmplib import ping
+from fabric import Connection
 
 
 class Node:
@@ -26,7 +28,31 @@ class Node:
         String representation of the node.
 
         '''
-        return f'IP: {self.ip}, Port: {self.port}'
+        return f'ID: {self.id_}, IP: {self.ip}, Port: {self.port}'
+
+    def send_command(self, command: str) -> str:
+        '''
+        Send a command to the node.
+
+        Args:
+            command (str): The command to send.
+
+        Returns:
+            str: The response from the node.
+
+        '''
+        ssh_key_file = os.getenv('SSH_KEY_FILE')
+        try:
+            with Connection(
+                self.ip,
+                port=self.port,
+                user=os.getenv('SSH_USER'),
+                connect_kwargs={'key_filename': ssh_key_file}
+            ) as conn:
+                result = conn.run(command, hide=True)
+                return result.stdout
+        except Exception as e:
+            raise e
 
     def _is_alive(self) -> bool | None:
         '''
