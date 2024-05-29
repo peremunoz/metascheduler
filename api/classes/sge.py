@@ -3,6 +3,11 @@ from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
 from api.routers.jobs import set_job_scheduler_job_id, update_job_status
+import xml.etree.ElementTree as ET
+
+SGE_ROOT = '/opt/sge/'
+QSTAT = SGE_ROOT + 'bin/lx-amd64/qstat'
+QSUB = SGE_ROOT + 'bin/lx-amd64/qsub'
 
 
 class SGE(Scheduler):
@@ -51,15 +56,22 @@ class SGE(Scheduler):
         Call the qstat command to get the list of jobs
 
         '''
-        raise NotImplementedError
+        qstat_xml = self.master_node.send_command(
+            f'export SGE_ROOT={SGE_ROOT} && {QSTAT} -xml')
+        return qstat_xml
 
-    def _parse_qstat(self, qstat_output) -> List[Job]:
+    def _parse_qstat(self, qstat_output) -> Tuple[int, str]:
         '''
-        TODO:
-        Parse the output of the qstat command
+        Parse the output of the qstat -xml command
 
         '''
-        raise NotImplementedError
+        root = ET.fromstring(qstat_output)
+        jobs_queue: Tuple[int, str] = []
+        for job_list in root.findall('.//job_list'):
+            job_id = job_list.find('JB_job_number').text
+            current_job_state = job_list.find('state').text
+            jobs_queue.append((int(job_id), current_job_state))
+        return jobs_queue
 
     def queue_job(self, job: Job):
         '''
