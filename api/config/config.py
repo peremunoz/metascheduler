@@ -18,6 +18,7 @@ class AppConfig(metaclass=Singleton):
     master_node: Node
     schedulers: List[Scheduler]
     _mode: ClusterMode
+    _highest_priority: Scheduler
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
         if os.environ.get('TESTING') == 'true':
@@ -61,7 +62,9 @@ class AppConfig(metaclass=Singleton):
         self.schedulers = schedulers_list
 
     def _load_mode(self) -> None:
-        self._mode = ClusterMode(self._config['cluster']['mode'])
+        self._mode = ClusterMode(self._config['cluster']['policy']['name'])
+        self._highest_priority = self.schedulers[int(self._config['cluster']
+                                                 ['policy']['highest_priority'])]
 
     def _init_db(self, database_file: Path) -> None:
         DatabaseHelper(self.schedulers, database_file)
@@ -72,6 +75,9 @@ class AppConfig(metaclass=Singleton):
 
     def get_mode(self) -> ClusterMode:
         return self._mode
+
+    def get_highest_priority(self) -> Scheduler:
+        return self._highest_priority
 
     def set_mode(self, mode: ClusterMode) -> None:
         self._mode = mode
