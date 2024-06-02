@@ -45,6 +45,7 @@ class SGE(Scheduler):
                 update_job_status(job.id_, job.owner, JobStatus.QUEUED)
             if job_id_state[1] == 'Eqw':
                 update_job_status(job.id_, job.owner, JobStatus.ERROR)
+                actual_jobs.remove(job)
             if job_id_state[1] == 'r':
                 update_job_status(job.id_, job.owner, JobStatus.RUNNING)
         ended_jobs_id = [
