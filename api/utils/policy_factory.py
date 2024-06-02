@@ -13,11 +13,11 @@ def get_policy_by_name(policy_name: ClusterMode, policy: PlanificationPolicy) ->
     '''
     if policy_name.value == ClusterMode.EXCLUSIVE.value:
         return ExclusivePolicy(policy)
-    if policy_name.name == ClusterMode.BEST_EFFORT.value:
+    if policy_name.value == ClusterMode.BEST_EFFORT.value:
         return BestEffortPolicy(policy)
-    if policy_name.name == ClusterMode.SHARED.value:
+    if policy_name.value == ClusterMode.SHARED.value:
         return SharedPolicy(policy)
-    if policy_name.name == ClusterMode.DYNAMIC.value:
+    if policy_name.value == ClusterMode.DYNAMIC.value:
         return DynamicPolicy(policy)
     else:
         raise ValueError('Policy not implemented')
