@@ -16,9 +16,9 @@ class ApacheHadoop(Scheduler):
         self.name = 'Apache Hadoop'
 
     def __str__(self) -> str:
-        return f'Apache Hadoop Scheduler: {self.hostname}:{self.port}'
+        return f'Apache Hadoop Scheduler: {self.master_node.ip}:{self.master_node.port}'
 
-    def update_job_list(self):
+    def update_job_list(self, metascheduler_queue: List[Job]):
         '''
         Update the job list.
         Also update the job status in the database.

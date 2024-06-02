@@ -23,7 +23,7 @@ class SGE(Scheduler):
         self.name = 'SGE'
 
     def __str__(self) -> str:
-        return f'SGE Scheduler: {self.hostname}:{self.port}'
+        return f'SGE Scheduler: {self.master_node.ip}:{self.master_node.port}'
 
     def update_job_list(self, metascheduler_queue: List[Job]):
         '''
