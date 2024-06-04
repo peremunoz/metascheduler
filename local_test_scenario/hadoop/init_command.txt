@@ -1,0 +1,1 @@
+hdfs dfs -setfacl -m user:metascheduler:rwx / && sudo systemctl start sshd
