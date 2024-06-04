@@ -25,7 +25,10 @@ services:
     volumes:
       - ./test.sh:/opt/test.sh
   nodemanager:
-    image: apache/hadoop:3
-    command: ["yarn", "nodemanager"]
+    build:
+      context: .
+      dockerfile: Dockerfile.nodemanager
     env_file:
       - ./config
+    ports:
+      - 3001:22

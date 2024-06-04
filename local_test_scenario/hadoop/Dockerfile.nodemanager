@@ -1,0 +1,16 @@
+FROM apache/hadoop:3
+
+COPY systemctl.py /usr/bin/systemctl
+COPY id_ed25519.pub /opt/hadoop/.ssh/authorized_keys
+
+RUN sudo chmod a+x /usr/bin/systemctl \
+    && sudo yum install -y openssh-server less \
+    && sudo ssh-keygen -A \
+    && sudo sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
+    && sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
+    && sudo systemctl enable sshd \
+    && sudo systemctl start sshd
+
+EXPOSE 22
+
+CMD ["yarn", "nodemanager"]
