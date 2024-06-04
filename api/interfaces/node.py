@@ -1,4 +1,5 @@
 import os
+import threading
 from icmplib import ping
 from fabric import Connection
 
@@ -53,6 +54,31 @@ class Node:
                 return result.stdout
         except Exception as e:
             raise e
+
+    def send_command_async(self, command: str) -> None:
+        '''
+        Send a command to the node asynchronously.
+
+        Args:
+            command (str): The command to send.
+
+        '''
+        ssh_key_file = os.getenv('SSH_KEY_FILE')
+
+        def run_command():
+            try:
+                with Connection(
+                    self.ip,
+                    port=self.port,
+                    user=os.getenv('SSH_USER'),
+                    connect_kwargs={'key_filename': ssh_key_file}
+                ) as conn:
+                    conn.run(command, hide=True)
+            except Exception as e:
+                raise e
+
+        thread = threading.Thread(target=run_command)
+        thread.start()
 
     def _is_alive(self) -> bool | None:
         '''
