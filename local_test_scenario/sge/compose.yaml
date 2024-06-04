@@ -1,0 +1,7 @@
+services:
+  sge_test:
+    build:
+      context: .
+      dockerfile: Dockerfile.sge
+    ports:
+      - 3000:22
