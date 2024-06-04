@@ -1,19 +1,23 @@
 {
     "cluster": {
         "policy": {
-            "name": "best_effort",
+            "name": "exclusive",
             "highest_priority": "0"
         },
         "nodes": [
             {
                 "ip": "localhost",
                 "port": "3000"
+            },
+            {
+                "ip": "localhost",
+                "port": "3001"
             }
         ],
         "schedulers": [
             {
                 "name": "Apache Hadoop",
-                "master": "0"
+                "master": "1"
             },
             {
                 "name": "SGE",
