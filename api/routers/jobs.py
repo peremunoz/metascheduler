@@ -93,9 +93,9 @@ def set_job_scheduler_job_id(job_id: int, owner: str, scheduler_job_id: int):
 @router.delete('/{job_id}')
 def delete_job(job_id: int, owner: str):
     stored_job = read_job(job_id, owner)
-    if stored_job.status.value is not JobStatus.QUEUED.value:
+    if stored_job.status.value is not JobStatus.TO_BE_QUEUED.value:
         raise HTTPException(
-            status_code=400, detail='Only QUEUED jobs can be deleted 🚫')
+            status_code=400, detail='Only TO_BE_QUEUED jobs can be deleted 🚫')
     try:
         DatabaseHelper().delete_job(job_id, owner)
         return {'status': 'success', 'message': 'Job deleted successfully ✅'}
