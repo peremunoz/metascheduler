@@ -5,11 +5,12 @@ from api.config.config import AppConfig
 from api.constants.job_status import JobStatus
 from api.daemons.policies.planification_policy import PlanificationPolicy
 from api.interfaces.job import Job
-from api.interfaces.scheduler import Scheduler
 from api.routers.jobs import read_jobs
 from api.utils.policy_factory import get_policy_by_name
 from api.utils.singleton import Singleton
 from rich import print
+
+CYCLE_TIME = 5
 
 
 def log(message):
@@ -43,16 +44,19 @@ class JobMonitorDaemon(metaclass=Singleton):
         log('Starting...')
         self.config = AppConfig()
         while not self._stop_event.is_set():
-            self.planification_policy = get_policy_by_name(
-                self.config.get_mode(), PlanificationPolicy(self.config.schedulers, self.config.get_highest_priority()))
-            self._update_jobs_queue()
-            self._update_scheduler_queues()
-            self._make_decisions()
-            sleep(5)
+            self._execute_cycle()
+            sleep(CYCLE_TIME)
 
     def stop(self):
         log(f'Shutting down...')
         self._stop_event.set()
+
+    def _execute_cycle(self):
+        self.planification_policy = get_policy_by_name(
+            self.config.get_mode(), PlanificationPolicy(self.config.schedulers, self.config.get_highest_priority()))
+        self._update_jobs_queue()
+        self._update_scheduler_queues()
+        self._make_decisions()
 
     def _update_jobs_queue(self):
         ''' Update the jobs queue '''
@@ -61,7 +65,8 @@ class JobMonitorDaemon(metaclass=Singleton):
             owner='root', status=None, queue=None)
         self.to_be_queued_jobs = read_jobs(
             owner='root', status=JobStatus.TO_BE_QUEUED, queue=None)
-        log(f'Jobs in queue: {len(self.metascheduler_queue)}')
+        log(f'Jobs in all queue: {len(self.metascheduler_queue)}')
+        log(f'Jobs to be queued: {len(self.to_be_queued_jobs)}')
         pass
 
     def _update_scheduler_queues(self):
