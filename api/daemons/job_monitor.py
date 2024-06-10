@@ -35,6 +35,7 @@ class JobMonitorDaemon(metaclass=Singleton):
     to_be_queued_jobs: List[Job] = []
     counter = 0
     planification_policy: PlanificationPolicy = None
+    planification_policy_name = None
 
     def __init__(self):
         self._stop_event = threading.Event()
@@ -52,11 +53,19 @@ class JobMonitorDaemon(metaclass=Singleton):
         self._stop_event.set()
 
     def _execute_cycle(self):
-        self.planification_policy = get_policy_by_name(
-            self.config.get_mode(), PlanificationPolicy(self.config.schedulers, self.config.get_highest_priority()))
+        self._update_policy_if_needed()
         self._update_jobs_queue()
         self._update_scheduler_queues()
         self._make_decisions()
+
+    def _update_policy_if_needed(self):
+        ''' Update the policy if needed '''
+        if self.planification_policy_name != self.config.get_mode():
+            self.planification_policy_name = self.config.get_mode()
+            self.planification_policy = get_policy_by_name(
+                self.planification_policy_name, PlanificationPolicy(
+                    self.config.schedulers, self.config.get_highest_priority()))
+            log(f'Using policy: {self.planification_policy_name}')
 
     def _update_jobs_queue(self):
         ''' Update the jobs queue '''
