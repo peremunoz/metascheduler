@@ -12,6 +12,7 @@ class Scheduler:
 
     name: str
     master_node: Node
+    nodes: List[Node]
     running_jobs: List[Job]
 
     def __init__(self) -> None:
@@ -23,6 +24,13 @@ class Scheduler:
 
         '''
         self.master_node = node
+
+    def set_nodes(self, nodes: List[Node]):
+        '''
+        Set the nodes
+
+        '''
+        self.nodes = nodes
 
     def update_job_list(self, metascheduler_queue: List[Job] = None):
         '''
