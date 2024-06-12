@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 from api.constants.job_status import JobStatus
 from api.interfaces.job import Job
 from api.interfaces.scheduler import Scheduler
@@ -38,6 +38,7 @@ class ApacheHadoop(Scheduler):
         if not self._is_any_job_running(response):
             for job in self.running_jobs:
                 update_job_status(job.id_, job.owner, JobStatus.COMPLETED)
+                self._reset_java_process_nice()
             self.running_jobs = []
 
     def get_job_list(self) -> List[Job]:
@@ -98,3 +99,32 @@ class ApacheHadoop(Scheduler):
         if match:
             return int(match.group(1)) > 0
         return False
+
+    def adjust_nice_of_all_jobs(self, new_nice: int):
+        for node in self.nodes:
+            ps_output = node.send_command(f'ps -eo pid,comm,nice')
+            job_processes_pid_nice: Tuple[int, int] = self._get_job_processes_from_ps(
+                ps_output)
+            for pid, actual_nice in job_processes_pid_nice:
+                if actual_nice == new_nice:
+                    continue
+                node.send_command(f'renice {new_nice} {pid}')
+
+    def _get_job_processes_from_ps(self, ps_output: str) -> Tuple[int, int]:
+        job_processes_pid_nice = []
+        lines = ps_output.split('\n')
+        for line in lines:
+            if 'java' in line:
+                job_processes_pid_nice.append(
+                    (int(line.split()[0]), int(line.split()[2])))
+        return job_processes_pid_nice
+
+    def _reset_java_process_nice(self):
+        for node in self.nodes:
+            ps_output = node.send_command(f'ps -eo pid,comm,nice')
+            job_processes_pid_nice: Tuple[int, int] = self._get_job_processes_from_ps(
+                ps_output)
+            for pid, actual_nice in job_processes_pid_nice:
+                if actual_nice == 0:
+                    continue
+                node.send_command(f'renice 0 {pid}')
