@@ -123,13 +123,14 @@ class SGE(Scheduler):
         Adjust the nice value of all running jobs' processes.
 
         '''
-        ps_output = self.master_node.send_command('ps -eo pid,comm,nice')
-        job_processes_pid_nice: Tuple[int, int] = self._get_job_processes_from_ps(
-            ps_output)
-        for pid, actual_nice in job_processes_pid_nice:
-            if actual_nice == new_nice:
-                continue
-            self.master_node.send_command(f'renice {new_nice} {pid}')
+        for node in self.nodes:
+            ps_output = node.send_command(f'ps -eo pid,comm,nice')
+            job_processes_pid_nice: Tuple[int, int] = self._get_job_processes_from_ps(
+                ps_output)
+            for pid, actual_nice in job_processes_pid_nice:
+                if actual_nice == new_nice:
+                    continue
+                node.send_command(f'renice {new_nice} {pid}')
 
     def _get_job_processes_from_ps(self, ps_output: str) -> Tuple[int, int]:
         '''
