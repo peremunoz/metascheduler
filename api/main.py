@@ -51,7 +51,7 @@ def main(
         )],
         ssh_user: Annotated[str, typer.Option(
             help="The SSH user to use to connect to the cluster nodes.",
-        )],
+        )] = 'metascheduler',
         database_file: Annotated[Path, typer.Option(
             help="The database file to store the job queue.",
             exists=False,
