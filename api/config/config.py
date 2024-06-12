@@ -54,6 +54,7 @@ class AppConfig(metaclass=Singleton):
         for scheduler in schedulers:
             scheduler_obj = get_scheduler(scheduler['name'])
             master = scheduler['master']
+            scheduler_obj.set_nodes(self.nodes)
             if master:
                 scheduler_obj.set_master_node(self.nodes[int(master)])
             else:
