@@ -45,3 +45,10 @@ class Scheduler:
 
         '''
         raise NotImplementedError
+
+    def adjust_nice_of_all_jobs(self, new_nice: int):
+        '''
+        Adjust the nice value of all running jobs.
+
+        '''
+        raise NotImplementedError
