@@ -55,6 +55,10 @@ class AppConfig(metaclass=Singleton):
             scheduler_obj = get_scheduler(scheduler['name'])
             master = scheduler['master']
             scheduler_obj.set_nodes(self.nodes)
+            weight = int(scheduler['weight'])
+            if weight < 0 or weight > 100:
+                raise ValueError('Scheduler weight must be between 0 and 100.')
+            scheduler_obj.set_weight(weight)
             if master:
                 scheduler_obj.set_master_node(self.nodes[int(master)])
             else:

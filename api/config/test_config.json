@@ -1,7 +1,7 @@
 {
     "cluster": {
         "policy": {
-            "name": "exclusive",
+            "name": "best_effort",
             "highest_priority": "0"
         },
         "nodes": [
@@ -17,11 +17,13 @@
         "schedulers": [
             {
                 "name": "Apache Hadoop",
-                "master": "1"
+                "master": "1",
+                "weight": "50"
             },
             {
                 "name": "SGE",
-                "master": "0"
+                "master": "0",
+                "weight": "50"
             }
         ]
     }

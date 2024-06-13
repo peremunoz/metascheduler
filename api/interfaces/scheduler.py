@@ -14,6 +14,7 @@ class Scheduler:
     master_node: Node
     nodes: List[Node]
     running_jobs: List[Job]
+    weight: int
 
     def __init__(self) -> None:
         self.running_jobs = []
@@ -31,6 +32,13 @@ class Scheduler:
 
         '''
         self.nodes = nodes
+
+    def set_weight(self, weight: int):
+        '''
+        Set the weight of the scheduler
+
+        '''
+        self.weight = weight
 
     def update_job_list(self, metascheduler_queue: List[Job] = None):
         '''
