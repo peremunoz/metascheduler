@@ -10,7 +10,7 @@ class DynamicPolicy(PlanificationPolicy):
         '''
 
         '''
-        super().__init__(policy.schedulers)
+        super().__init__(policy.schedulers, policy.highest_priority)
 
     def apply(self):
         '''
