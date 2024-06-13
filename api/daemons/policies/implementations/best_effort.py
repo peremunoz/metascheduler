@@ -33,7 +33,8 @@ class BestEffortPolicy(PlanificationPolicy):
 
         '''
         if not to_be_queued_jobs:
-            print('No jobs to be queued.')
+            print('No jobs to be queued, but adjusting priorities...')
+            self._adjust_priorities()
             return
 
         next_job = to_be_queued_jobs[0]
