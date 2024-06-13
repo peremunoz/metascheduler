@@ -18,7 +18,7 @@ To define the nodes, it is necessary to create a `nodes` array with the followin
 To define the schedulers, it is necessary to create a `schedulers` array with the following attributes:
 - `name`: The name of the scheduler. It can be any string.
 - `master`: A number that indicates which node is the master node of the scheduler. It has to be the index of the node in the `nodes` array.
-- `weight`: The weight of the scheduler. It has to be a number between 0 and 100. Used in the shared policy.
+- `weight`: The weight of the scheduler. It has to be a number between 0 and 100. Used in the shared policy. Between all the schedulers, the sum of the weights has to be 100.
 # Setup the project
 ## Install dependencies
 To install the dependencies, it is necessary to have pipenv installed. Then, it is necessary to install the dependencies with the following command:
