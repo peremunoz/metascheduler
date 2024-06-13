@@ -18,6 +18,7 @@ class AppConfig(metaclass=Singleton):
     master_node: Node
     schedulers: List[Scheduler]
     _mode: ClusterMode
+    _highest_priority: Scheduler
 
     def __init__(self, config_file: Path = None, database_file: Path = None) -> None:
         if os.environ.get('TESTING') == 'true':
@@ -52,14 +53,23 @@ class AppConfig(metaclass=Singleton):
         schedulers_list: List[Scheduler] = []
         for scheduler in schedulers:
             scheduler_obj = get_scheduler(scheduler['name'])
-            hostname_port = scheduler['host:port'].split(':')
-            scheduler_obj.hostname = hostname_port[0]
-            scheduler_obj.port = int(hostname_port[1])
+            master = scheduler['master']
+            scheduler_obj.set_nodes(self.nodes)
+            weight = int(scheduler['weight'])
+            if weight < 0 or weight > 100:
+                raise ValueError('Scheduler weight must be between 0 and 100.')
+            scheduler_obj.set_weight(weight)
+            if master:
+                scheduler_obj.set_master_node(self.nodes[int(master)])
+            else:
+                scheduler_obj.set_master_node(self.master_node)
             schedulers_list.append(scheduler_obj)
         self.schedulers = schedulers_list
 
     def _load_mode(self) -> None:
-        self._mode = ClusterMode(self._config['cluster']['mode'])
+        self._mode = ClusterMode(self._config['cluster']['policy']['name'])
+        self._highest_priority = self.schedulers[int(self._config['cluster']
+                                                 ['policy']['highest_priority'])]
 
     def _init_db(self, database_file: Path) -> None:
         DatabaseHelper(self.schedulers, database_file)
@@ -70,6 +80,9 @@ class AppConfig(metaclass=Singleton):
 
     def get_mode(self) -> ClusterMode:
         return self._mode
+
+    def get_highest_priority(self) -> Scheduler:
+        return self._highest_priority
 
     def set_mode(self, mode: ClusterMode) -> None:
         self._mode = mode

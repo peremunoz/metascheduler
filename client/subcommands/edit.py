@@ -19,11 +19,14 @@ class ClusterMode(str, Enum):
 
 
 @app.command(help="Edit the cluster working mode.")
-def cluster_mode(cluster_mode: Annotated[ClusterMode, typer.Argument(help="The cluster mode to set the cluster to.", callback=lambda x: x.lower(), case_sensitive=False)]):
+def cluster_mode(cluster_mode: Annotated[ClusterMode, typer.Argument(help="The cluster mode to set the cluster to.", callback=lambda x: x.lower(), case_sensitive=False)],
+                 root: Annotated[bool, typer.Option(help="Set the cluster mode as root.", hidden=True)] = False):
     request_data = {
         "user": os.getenv("USER"),
         "mode": cluster_mode
     }
+    if root:
+        request_data["user"] = "root"
     response: Response = HTTP_Client().put('/cluster/mode', request_data)
     respose_message = response.json()["message"] + f" ({cluster_mode})"
     panel = Panel(

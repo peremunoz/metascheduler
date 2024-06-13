@@ -2,11 +2,15 @@ import threading
 from time import sleep
 from typing import List
 from api.config.config import AppConfig
+from api.constants.job_status import JobStatus
+from api.daemons.policies.planification_policy import PlanificationPolicy
 from api.interfaces.job import Job
-from api.interfaces.scheduler import Scheduler
 from api.routers.jobs import read_jobs
+from api.utils.policy_factory import get_policy_by_name
 from api.utils.singleton import Singleton
 from rich import print
+
+CYCLE_TIME = 5
 
 
 def log(message):
@@ -28,7 +32,10 @@ class JobMonitorDaemon(metaclass=Singleton):
 
     config: AppConfig
     metascheduler_queue: List[Job] = []
+    to_be_queued_jobs: List[Job] = []
     counter = 0
+    planification_policy: PlanificationPolicy = None
+    planification_policy_name = None
 
     def __init__(self):
         self._stop_event = threading.Event()
@@ -38,43 +45,50 @@ class JobMonitorDaemon(metaclass=Singleton):
         log('Starting...')
         self.config = AppConfig()
         while not self._stop_event.is_set():
-            self._update_jobs_queue()
-            self._update_scheduler_queues()
-            self._make_decisions()
-            sleep(5)
+            self._execute_cycle()
+            sleep(CYCLE_TIME)
 
     def stop(self):
         log(f'Shutting down...')
         self._stop_event.set()
+
+    def _execute_cycle(self):
+        self._update_policy_if_needed()
+        self._update_jobs_queue()
+        self._update_scheduler_queues()
+        self._make_decisions()
+
+    def _update_policy_if_needed(self):
+        ''' Update the policy if needed '''
+        if self.planification_policy_name != self.config.get_mode():
+            self.planification_policy_name = self.config.get_mode()
+            self.planification_policy = get_policy_by_name(
+                self.planification_policy_name, PlanificationPolicy(
+                    self.config.schedulers, self.config.get_highest_priority()))
+            log(f'Using policy: {self.planification_policy_name}')
 
     def _update_jobs_queue(self):
         ''' Update the jobs queue '''
         log('Monitoring jobs...')
         self.metascheduler_queue = read_jobs(
             owner='root', status=None, queue=None)
-        log(f'Jobs in queue: {len(self.metascheduler_queue)}')
+        self.to_be_queued_jobs = read_jobs(
+            owner='root', status=JobStatus.TO_BE_QUEUED, queue=None)
+        log(f'Jobs in all queue: {len(self.metascheduler_queue)}')
+        log(f'Jobs to be queued: {len(self.to_be_queued_jobs)}')
         pass
 
     def _update_scheduler_queues(self):
         ''' Update the scheduler queues '''
         log('Checking queues...')
         for scheduler in self.config.schedulers:
-            scheduler.update_job_list()
+            scheduler.update_job_list(
+                self.metascheduler_queue)
             log(f'{scheduler.name}: {len(scheduler.get_job_list())} jobs')
         pass
 
     def _make_decisions(self):
         ''' Make decisions based on the monitored jobs and queues '''
         log('Making decisions...')
-        if (self.counter == 1):
-            scheduler = self.config.schedulers[0]
-            scheduler.queue_job(self.metascheduler_queue[0])
-            log(
-                f'Queued job {self.metascheduler_queue[0].name} to {scheduler.name}')
-        if (self.counter == 2):
-            scheduler = self.config.schedulers[0]
-            scheduler.queue_job(self.metascheduler_queue[1])
-            log(
-                f'Queued job {self.metascheduler_queue[1].name} to {scheduler.name}')
-        self.counter += 1
+        self.planification_policy.apply(self.to_be_queued_jobs)
         pass

@@ -1,32 +1,29 @@
 {
     "cluster": {
-        "mode": "exclusive",
+        "policy": {
+            "name": "best_effort",
+            "highest_priority": "0"
+        },
         "nodes": [
             {
-                "ip": "",
-                "port": ""
+                "ip": "localhost",
+                "port": "3000"
             },
             {
-                "ip": "",
-                "port": ""
-            },
-            {
-                "ip": "",
-                "port": ""
-            },
-            {
-                "ip": "",
-                "port": ""
+                "ip": "localhost",
+                "port": "3001"
             }
         ],
         "schedulers": [
             {
                 "name": "Apache Hadoop",
-                "host:port": "localhost:3000"
+                "master": "1",
+                "weight": "50"
             },
             {
                 "name": "SGE",
-                "host:port": "localhost:3000"
+                "master": "0",
+                "weight": "50"
             }
         ]
     }

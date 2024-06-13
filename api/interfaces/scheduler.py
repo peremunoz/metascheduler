@@ -1,6 +1,7 @@
 from typing import List
 
 from api.interfaces.job import Job
+from api.interfaces.node import Node
 
 
 class Scheduler:
@@ -10,14 +11,36 @@ class Scheduler:
     '''
 
     name: str
-    hostname: str
-    port: int
+    master_node: Node
+    nodes: List[Node]
     running_jobs: List[Job]
+    weight: int
 
     def __init__(self) -> None:
         self.running_jobs = []
 
-    def update_job_list(self):
+    def set_master_node(self, node: Node):
+        '''
+        Set the master node
+
+        '''
+        self.master_node = node
+
+    def set_nodes(self, nodes: List[Node]):
+        '''
+        Set the nodes
+
+        '''
+        self.nodes = nodes
+
+    def set_weight(self, weight: int):
+        '''
+        Set the weight of the scheduler
+
+        '''
+        self.weight = weight
+
+    def update_job_list(self, metascheduler_queue: List[Job] = None):
         '''
         Update the job list
         Also update the job status in the database
@@ -35,6 +58,13 @@ class Scheduler:
     def queue_job(self, job: Job):
         '''
         Queue a job
+
+        '''
+        raise NotImplementedError
+
+    def adjust_nice_of_all_jobs(self, new_nice: int):
+        '''
+        Adjust the nice value of all running jobs.
 
         '''
         raise NotImplementedError

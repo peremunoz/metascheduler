@@ -1,0 +1,20 @@
+FROM apache/hadoop:3
+
+COPY systemctl.py /usr/bin/systemctl
+
+RUN sudo chmod a+x /usr/bin/systemctl \
+&& sudo yum install -y openssh-server less \
+&& sudo useradd -m -G users,hadoop metascheduler \
+&& sudo mkdir /home/metascheduler/.ssh \
+&& sudo chown metascheduler:metascheduler /home/metascheduler/.ssh \
+&& sudo chmod 700 /home/metascheduler/.ssh \
+&& sudo ssh-keygen -A \
+&& sudo sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config \
+&& sudo sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config \
+&& sudo cp /opt/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-3.3.6.jar /home/metascheduler/
+
+COPY id_ed25519.pub /home/metascheduler/.ssh/authorized_keys
+
+EXPOSE 22
+
+CMD ["yarn", "nodemanager"]

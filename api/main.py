@@ -40,6 +40,18 @@ def main(
             readable=True,
             resolve_path=True,
         )],
+        ssh_key_file: Annotated[Path, typer.Option(
+            help="The SSH key file to use to connect to the cluster nodes.",
+            exists=False,
+            file_okay=True,
+            dir_okay=False,
+            writable=False,
+            readable=True,
+            resolve_path=True,
+        )],
+        ssh_user: Annotated[str, typer.Option(
+            help="The SSH user to use to connect to the cluster nodes.",
+        )] = 'metascheduler',
         database_file: Annotated[Path, typer.Option(
             help="The database file to store the job queue.",
             exists=False,
@@ -52,6 +64,9 @@ def main(
         host: Annotated[str, typer.Option(help='Host to bind to')] = '0.0.0.0',
         port: Annotated[int, typer.Option(help='Port to bind to')] = 8000
 ):
+    if ssh_key_file:
+        os.environ['SSH_KEY_FILE'] = str(ssh_key_file)
+    os.environ['SSH_USER'] = ssh_user
     AppConfig(config_file, database_file)
     uvicorn.run(app, host=host, port=port)
 

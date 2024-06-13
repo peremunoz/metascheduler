@@ -4,7 +4,7 @@ from api.constants.cluster_mode import ClusterMode
 
 with open('config/test_config.json', 'r', encoding='utf-8') as config_file:
     config = json.load(config_file)
-    test_cluster_mode = config['cluster']['mode']
+    test_cluster_mode = config['cluster']['policy']['name']
 
 root_put_cluster_mode_body: PutClusterModeModel = {
     'user': 'root',

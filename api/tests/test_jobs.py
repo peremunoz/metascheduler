@@ -139,7 +139,7 @@ def test_read_jobs_by_status(client):
     assert response.status_code == 201
 
     response = client.get(
-        '/jobs', params={'owner': 'root', 'status': JobStatus.QUEUED.value})
+        '/jobs', params={'owner': 'root', 'status': JobStatus.TO_BE_QUEUED.value})
     assert response.status_code == 200
     assert len(response.json()) == 3
     assert response.json()[0]['name'] == test_job_1['name']
@@ -210,7 +210,7 @@ def test_read_jobs_by_owner_status(client):
     assert response.status_code == 201
 
     response = client.get(
-        '/jobs', params={'owner': 'owner1', 'status': JobStatus.QUEUED.value})
+        '/jobs', params={'owner': 'owner1', 'status': JobStatus.TO_BE_QUEUED.value})
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['name'] == test_job_1['name']
@@ -218,7 +218,7 @@ def test_read_jobs_by_owner_status(client):
     assert response.json()[0]['owner'] == test_job_1['owner']
 
     response = client.get(
-        '/jobs', params={'owner': 'owner2', 'status': JobStatus.QUEUED.value})
+        '/jobs', params={'owner': 'owner2', 'status': JobStatus.TO_BE_QUEUED.value})
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['name'] == test_job_2['name']
@@ -226,7 +226,7 @@ def test_read_jobs_by_owner_status(client):
     assert response.json()[0]['owner'] == test_job_2['owner']
 
     response = client.get(
-        '/jobs', params={'owner': 'owner3', 'status': JobStatus.QUEUED.value})
+        '/jobs', params={'owner': 'owner3', 'status': JobStatus.TO_BE_QUEUED.value})
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['name'] == test_job_3['name']
@@ -234,7 +234,7 @@ def test_read_jobs_by_owner_status(client):
     assert response.json()[0]['owner'] == test_job_3['owner']
 
     response = client.get(
-        '/jobs', params={'owner': 'owner4', 'status': JobStatus.QUEUED.value})
+        '/jobs', params={'owner': 'owner4', 'status': JobStatus.TO_BE_QUEUED.value})
     assert response.status_code == 200
     assert response.json() == []
 
@@ -258,7 +258,7 @@ def test_read_jobs_by_owner_status_queue(client):
     assert response.status_code == 201
 
     response = client.get(
-        '/jobs', params={'owner': 'owner1', 'status': JobStatus.QUEUED.value, 'queue': 1})
+        '/jobs', params={'owner': 'owner1', 'status': JobStatus.TO_BE_QUEUED.value, 'queue': 1})
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['name'] == test_job_1['name']
@@ -266,7 +266,7 @@ def test_read_jobs_by_owner_status_queue(client):
     assert response.json()[0]['owner'] == test_job_1['owner']
 
     response = client.get(
-        '/jobs', params={'owner': 'owner2', 'status': JobStatus.QUEUED.value, 'queue': 1})
+        '/jobs', params={'owner': 'owner2', 'status': JobStatus.TO_BE_QUEUED.value, 'queue': 1})
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['name'] == test_job_2['name']
@@ -274,7 +274,7 @@ def test_read_jobs_by_owner_status_queue(client):
     assert response.json()[0]['owner'] == test_job_2['owner']
 
     response = client.get(
-        '/jobs', params={'owner': 'owner3', 'status': JobStatus.QUEUED.value, 'queue': 2})
+        '/jobs', params={'owner': 'owner3', 'status': JobStatus.TO_BE_QUEUED.value, 'queue': 2})
     assert response.status_code == 200
     assert len(response.json()) == 1
     assert response.json()[0]['name'] == test_job_3['name']
@@ -282,7 +282,7 @@ def test_read_jobs_by_owner_status_queue(client):
     assert response.json()[0]['owner'] == test_job_3['owner']
 
     response = client.get(
-        '/jobs', params={'owner': 'owner4', 'status': JobStatus.QUEUED.value, 'queue': 1})
+        '/jobs', params={'owner': 'owner4', 'status': JobStatus.TO_BE_QUEUED.value, 'queue': 1})
     assert response.status_code == 200
     assert response.json() == []
 
@@ -297,7 +297,7 @@ def test_read_jobs_by_owner_status_queue(client):
     assert response.json() == []
 
     response = client.get(
-        '/jobs', params={'owner': 'root', 'status': JobStatus.QUEUED.value, 'queue': 1})
+        '/jobs', params={'owner': 'root', 'status': JobStatus.TO_BE_QUEUED.value, 'queue': 1})
     assert response.status_code == 200
     assert len(response.json()) == 2
     assert response.json()[0]['name'] == test_job_1['name']
@@ -416,7 +416,7 @@ def test_update_job_name_only(client):
     assert response.json()['name'] == 'job1_updated'
     assert response.json()['queue'] == test_job_1['queue']
     assert response.json()['owner'] == 'owner1'
-    assert response.json()['status'] == JobStatus.QUEUED.value
+    assert response.json()['status'] == JobStatus.TO_BE_QUEUED.value
     assert response.json()['path'] == test_job_1['path']
     assert response.json()['options'] == test_job_1['options']
 
@@ -436,7 +436,7 @@ def test_update_job_queue_only(client):
     assert response.json()['name'] == test_job_1['name']
     assert response.json()['queue'] == 2
     assert response.json()['owner'] == 'owner1'
-    assert response.json()['status'] == JobStatus.QUEUED.value
+    assert response.json()['status'] == JobStatus.TO_BE_QUEUED.value
     assert response.json()['path'] == test_job_1['path']
     assert response.json()['options'] == test_job_1['options']
 
@@ -477,7 +477,7 @@ def test_update_job_path_only(client):
     assert response.json()['name'] == test_job_1['name']
     assert response.json()['queue'] == test_job_1['queue']
     assert response.json()['owner'] == 'owner1'
-    assert response.json()['status'] == JobStatus.QUEUED.value
+    assert response.json()['status'] == JobStatus.TO_BE_QUEUED.value
     assert response.json()['path'] == '/path/to/job1_updated'
     assert response.json()['options'] == test_job_1['options']
 
@@ -497,7 +497,7 @@ def test_update_job_options_only(client):
     assert response.json()['name'] == test_job_1['name']
     assert response.json()['queue'] == test_job_1['queue']
     assert response.json()['owner'] == 'owner1'
-    assert response.json()['status'] == JobStatus.QUEUED.value
+    assert response.json()['status'] == JobStatus.TO_BE_QUEUED.value
     assert response.json()['path'] == test_job_1['path']
     assert response.json()[
         'options'] == '--option1 value1_updated --option2 value2_updated'

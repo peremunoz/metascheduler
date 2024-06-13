@@ -9,6 +9,7 @@ typer = "*"
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 icmplib = "*"
+fabric = "*"
 
 [dev-packages]
 httpx = "*"
