@@ -69,6 +69,13 @@ class Scheduler:
         '''
         raise NotImplementedError
 
+    def adjust_nice_of_job(self, job_pid: int, new_nice: int):
+        '''
+        Adjust the nice value of a running job.
+
+        '''
+        raise NotImplementedError
+
     def get_all_jobs_info(self) -> List[Tuple[int, int, float, float]]:
         '''
         Get the information of all running jobs.
