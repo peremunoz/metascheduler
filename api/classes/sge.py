@@ -141,6 +141,14 @@ class SGE(Scheduler):
                     continue
                 node.send_command(f'renice {new_nice} {pid}')
 
+    def adjust_nice_of_job(self, job_pid: int, new_nice: int):
+        '''
+        Adjust the nice value of a running job.
+
+        '''
+        for node in self.nodes:
+            node.send_command(f'renice {new_nice} {job_pid}')
+
     def _get_job_info_from_ps(self, ps_output: str) -> List[Tuple[int, int, float, float]]:
         '''
         Get the list of processes of the running jobs.

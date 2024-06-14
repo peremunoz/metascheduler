@@ -110,6 +110,14 @@ class ApacheHadoop(Scheduler):
                     continue
                 node.send_command(f'renice {new_nice} {pid}')
 
+    def adjust_nice_of_job(self, job_pid: int, new_nice: int):
+        '''
+        Adjust the nice value of a running job.
+
+        '''
+        for node in self.nodes:
+            node.send_command(f'renice {new_nice} {job_pid}')
+
     def get_all_jobs_info(self) -> List[Tuple[int, int, float, float]]:
         '''
         Get the information of all running jobs
