@@ -118,6 +118,15 @@ class SGE(Scheduler):
         '''
         return int(qsub_output.split()[2])
 
+    def get_all_jobs_info(self) -> List[Tuple[int, int, float, float]]:
+        '''
+        Get the information of all running jobs
+
+        '''
+        node = self.master_node
+        ps_output = node.send_command(f'ps -eo pid,comm,nice,%cpu,%mem')
+        return self._get_job_info_from_ps(ps_output)
+
     def adjust_nice_of_all_jobs(self, new_nice: int):
         '''
         Adjust the nice value of all running jobs' processes.
@@ -131,6 +140,21 @@ class SGE(Scheduler):
                 if actual_nice == new_nice:
                     continue
                 node.send_command(f'renice {new_nice} {pid}')
+
+    def _get_job_info_from_ps(self, ps_output: str) -> List[Tuple[int, int, float, float]]:
+        '''
+        Get the list of processes of the running jobs.
+
+        Search for the sge_shepherd process and get the PID of the process and the nice value.
+
+        '''
+        job_processes_pid_nice_cpu_mem = []
+        lines = ps_output.split('\n')
+        for line in lines:
+            if 'sge_shepherd' in line:
+                job_processes_pid_nice_cpu_mem.append(
+                    (int(line.split()[0]), int(line.split()[2]), float(line.split()[3]), float(line.split()[4])))
+        return job_processes_pid_nice_cpu_mem
 
     def _get_job_processes_from_ps(self, ps_output: str) -> Tuple[int, int]:
         '''
