@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from api.interfaces.job import Job
 from api.interfaces.node import Node
@@ -65,6 +65,13 @@ class Scheduler:
     def adjust_nice_of_all_jobs(self, new_nice: int):
         '''
         Adjust the nice value of all running jobs.
+
+        '''
+        raise NotImplementedError
+
+    def get_nice_of_all_jobs(self) -> List[Tuple[int, int]]:
+        '''
+        Get the nice value of all running jobs.
 
         '''
         raise NotImplementedError
