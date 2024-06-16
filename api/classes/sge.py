@@ -165,6 +165,8 @@ class SGE(Scheduler):
         if not sge_executors:
             return job_processes_pid_nice_cpu_mem
         for line in lines:
+            if not line:
+                continue
             if int(line.split()[5]) in sge_executors:
                 job_processes_pid_nice_cpu_mem.append(
                     (int(line.split()[0]), int(line.split()[2]), float(line.split()[3]), float(line.split()[4])))
@@ -186,6 +188,8 @@ class SGE(Scheduler):
         if not sge_executors:
             return job_processes_pid_nice
         for line in lines:
+            if not line:
+                continue
             if int(line.split()[3]) in sge_executors:
                 job_processes_pid_nice.append(
                     (int(line.split()[0]), int(line.split()[2])))
