@@ -3,7 +3,7 @@ FROM apache/hadoop:3
 COPY systemctl.py /usr/bin/systemctl
 
 RUN sudo chmod a+x /usr/bin/systemctl \
-&& sudo yum install -y openssh-server less \
+&& sudo yum install -y openssh-server less psmisc \
 && sudo useradd -m -G users,hadoop metascheduler \
 && sudo mkdir /home/metascheduler/.ssh \
 && sudo chown metascheduler:metascheduler /home/metascheduler/.ssh \
