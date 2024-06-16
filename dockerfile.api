@@ -1,0 +1,22 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip
+
+WORKDIR /api
+
+COPY api .
+    
+RUN pip3 install pipenv \
+    && pipenv install
+
+ENV PYTHONPATH=..
+ENV CONFIG_FILE=config/test_config.json
+ENV SSH_KEY_FILE=
+ENV SSH_USER=
+ENV DATABASE_FILE=
+ENV HOST=
+ENV PORT=
+
+CMD [ "pipenv", "run", "python3", "main.py" ]
