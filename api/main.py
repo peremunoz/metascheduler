@@ -39,6 +39,7 @@ def main(
             writable=False,
             readable=True,
             resolve_path=True,
+            envvar='CONFIG_FILE'
         )],
         ssh_key_file: Annotated[Path, typer.Option(
             help="The SSH key file to use to connect to the cluster nodes.",
@@ -48,9 +49,11 @@ def main(
             writable=False,
             readable=True,
             resolve_path=True,
+            envvar='SSH_KEY_FILE'
         )],
         ssh_user: Annotated[str, typer.Option(
             help="The SSH user to use to connect to the cluster nodes.",
+            envvar='SSH_USER'
         )] = 'metascheduler',
         database_file: Annotated[Path, typer.Option(
             help="The database file to store the job queue.",
@@ -60,9 +63,12 @@ def main(
             writable=True,
             readable=False,
             resolve_path=True,
+            envvar='DATABASE_FILE'
         )] = None,
-        host: Annotated[str, typer.Option(help='Host to bind to')] = '0.0.0.0',
-        port: Annotated[int, typer.Option(help='Port to bind to')] = 8000
+        host: Annotated[str, typer.Option(
+            help='Host to bind to', envvar='HOST')] = '0.0.0.0',
+        port: Annotated[int, typer.Option(
+            help='Port to bind to', envvar='PORT')] = 8000
 ):
     if ssh_key_file:
         os.environ['SSH_KEY_FILE'] = str(ssh_key_file)
