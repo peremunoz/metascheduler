@@ -124,7 +124,7 @@ class SGE(Scheduler):
 
         '''
         node = self.master_node
-        ps_output = node.send_command(f'ps -eo pid,comm,nice,%cpu,%mem')
+        ps_output = node.send_command(f'ps -eo pid,comm,nice,%cpu,%mem,ppid')
         return self._get_job_info_from_ps(ps_output)
 
     def adjust_nice_of_all_jobs(self, new_nice: int):
@@ -133,7 +133,7 @@ class SGE(Scheduler):
 
         '''
         for node in self.nodes:
-            ps_output = node.send_command(f'ps -eo pid,comm,nice')
+            ps_output = node.send_command(f'ps -eo pid,comm,nice,ppid')
             job_processes_pid_nice: Tuple[int, int] = self._get_job_processes_from_ps(
                 ps_output)
             for pid, actual_nice in job_processes_pid_nice:
@@ -157,9 +157,15 @@ class SGE(Scheduler):
 
         '''
         job_processes_pid_nice_cpu_mem = []
-        lines = ps_output.split('\n')
+        sge_executors = []
+        lines = ps_output.split('\n')[1:]
         for line in lines:
             if 'sge_shepherd' in line:
+                sge_executors.append(int(line.split()[0]))
+        if not sge_executors:
+            return job_processes_pid_nice_cpu_mem
+        for line in lines:
+            if int(line.split()[5]) in sge_executors:
                 job_processes_pid_nice_cpu_mem.append(
                     (int(line.split()[0]), int(line.split()[2]), float(line.split()[3]), float(line.split()[4])))
         return job_processes_pid_nice_cpu_mem
@@ -172,9 +178,15 @@ class SGE(Scheduler):
 
         '''
         job_processes_pid_nice = []
-        lines = ps_output.split('\n')
+        sge_executors = []
+        lines = ps_output.split('\n')[1:]
         for line in lines:
             if 'sge_shepherd' in line:
+                sge_executors.append(int(line.split()[0]))
+        if not sge_executors:
+            return job_processes_pid_nice
+        for line in lines:
+            if int(line.split()[3]) in sge_executors:
                 job_processes_pid_nice.append(
                     (int(line.split()[0]), int(line.split()[2])))
         return job_processes_pid_nice
