@@ -74,11 +74,8 @@ class ApacheHadoop(Scheduler):
 
         '''
         self.master_node.send_command_async(
-            f'export JAVA_HOME={JAVA_HOME} && {HADOOP_HOME}/bin/yarn jar {job.path} {job.options}'
+            f'sudo -u {job.owner} sh -c \'export JAVA_HOME={JAVA_HOME} && cd {job.pwd} && {HADOOP_HOME}/bin/yarn jar {job.path} {job.options}\''
         )
-        # self.master_node.send_command_async(
-        #     f'export JAVA_HOME={JAVA_HOME} && {HADOOP_HOME}/bin/yarn jar hadoop-mapreduce-examples-3.3.6.jar pi 2 4 &'
-        # )
 
     def _call_yarn_application(self) -> str:
         '''

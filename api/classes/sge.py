@@ -105,9 +105,8 @@ class SGE(Scheduler):
         and return the job id assigned by the scheduler.
 
         '''
-        script_path = job.pwd + '/' + job.path
         message = self.master_node.send_command(
-            f'export SGE_ROOT={SGE_ROOT} && {QSUB} -N {job.name} -o {script_path} -e {script_path} {script_path} {job.options}')
+            f'sudo -u {job.owner} sh -c \'export SGE_ROOT={SGE_ROOT} && cd {job.pwd} && {QSUB} -N {job.name} -o {job.pwd} -e {job.pwd} {job.path} {job.options}\'')
         assigned_job_id = self._parse_qsub(message)
         return assigned_job_id
 
