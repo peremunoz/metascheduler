@@ -117,7 +117,7 @@ class SGE(Scheduler):
         '''
         return int(qsub_output.split()[2])
 
-    def get_all_jobs_info(self) -> List[Tuple[int, int, float, float]]:
+    def get_all_jobs_info(self) -> List[Tuple[int, int, float, float, str]]:
         '''
         Get the information of all running jobs
 
