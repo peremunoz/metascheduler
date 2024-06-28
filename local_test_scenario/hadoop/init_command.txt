@@ -1,1 +1,1 @@
-hdfs dfs -setfacl -m user:metascheduler:rwx / && sudo systemctl start sshd
+hdfs dfs -setfacl -m user:metascheduler:rwx / && /opt/hadoop/bin/hdfs dfs -chown -R metascheduler:metascheduler / && /opt/hadoop/bin/hdfs dfs -chmod -R 755 / && (echo 'metascheduler ALL=(ALL) NOPASSWD: ALL' | sudo tee -a /etc/sudoers) && sudo systemctl start sshd

@@ -105,9 +105,8 @@ class SGE(Scheduler):
         and return the job id assigned by the scheduler.
 
         '''
-        script_path = job.pwd + '/' + job.path
         message = self.master_node.send_command(
-            f'export SGE_ROOT={SGE_ROOT} && {QSUB} -N {job.name} -o {script_path} -e {script_path} {script_path} {job.options}')
+            f'sudo -u {job.owner} sh -c \'export SGE_ROOT={SGE_ROOT} && cd {job.pwd} && {QSUB} -N {job.name} -o {job.pwd} -e {job.pwd} {job.path} {job.options}\'')
         assigned_job_id = self._parse_qsub(message)
         return assigned_job_id
 
@@ -118,31 +117,82 @@ class SGE(Scheduler):
         '''
         return int(qsub_output.split()[2])
 
+    def get_all_jobs_info(self) -> List[Tuple[int, int, float, float, str]]:
+        '''
+        Get the information of all running jobs
+
+        '''
+        node = self.master_node
+        ps_output = node.send_command(
+            f'ps -eo pid,comm,nice,%cpu,%mem,ppid,user')
+        return self._get_job_info_from_ps(ps_output)
+
     def adjust_nice_of_all_jobs(self, new_nice: int):
         '''
         Adjust the nice value of all running jobs' processes.
 
         '''
         for node in self.nodes:
-            ps_output = node.send_command(f'ps -eo pid,comm,nice')
-            job_processes_pid_nice: Tuple[int, int] = self._get_job_processes_from_ps(
+            ps_output = node.send_command(f'ps -eo pid,comm,nice,ppid,user')
+            job_processes_pid_nice: Tuple[int, int, str] = self._get_job_processes_from_ps(
                 ps_output)
-            for pid, actual_nice in job_processes_pid_nice:
+            for pid, actual_nice, user in job_processes_pid_nice:
                 if actual_nice == new_nice:
                     continue
-                node.send_command(f'renice {new_nice} {pid}')
+                node.send_command(
+                    f'sudo -u {user} sh -c \'renice {new_nice} {pid}\'', critical=False)
 
-    def _get_job_processes_from_ps(self, ps_output: str) -> Tuple[int, int]:
+    def adjust_nice_of_job(self, job_pid: int, new_nice: int, user: str):
+        '''
+        Adjust the nice value of a running job.
+
+        '''
+        for node in self.nodes:
+            node.send_command(
+                f'sudo -u {user} sh -c \'renice {new_nice} {job_pid}\'', critical=False)
+
+    def _get_job_info_from_ps(self, ps_output: str) -> List[Tuple[int, int, float, float, str]]:
         '''
         Get the list of processes of the running jobs.
 
         Search for the sge_shepherd process and get the PID of the process and the nice value.
 
         '''
-        job_processes_pid_nice = []
-        lines = ps_output.split('\n')
+        job_processes_pid_nice_cpu_mem = []
+        sge_executors = []
+        lines = ps_output.split('\n')[1:]
         for line in lines:
             if 'sge_shepherd' in line:
+                sge_executors.append(int(line.split()[0]))
+        if not sge_executors:
+            return job_processes_pid_nice_cpu_mem
+        for line in lines:
+            if not line:
+                continue
+            if int(line.split()[5]) in sge_executors:
+                job_processes_pid_nice_cpu_mem.append(
+                    (int(line.split()[0]), int(line.split()[2]), float(line.split()[3]), float(line.split()[4]), line.split()[6]))
+        return job_processes_pid_nice_cpu_mem
+
+    def _get_job_processes_from_ps(self, ps_output: str) -> Tuple[int, int, str]:
+        '''
+        Get the list of processes of the running jobs.
+
+        Search for the sge_shepherd process and get the PID of the process, the nice value and the user.
+
+        '''
+        job_processes_pid_nice = []
+        sge_executors = []
+        lines = ps_output.split('\n')[1:]
+        for line in lines:
+            if 'sge_shepherd' in line:
+                sge_executors.append(int(line.split()[0]))
+        if not sge_executors:
+            return job_processes_pid_nice
+        for line in lines:
+            if not line:
+                continue
+            if int(line.split()[3]) in sge_executors:
                 job_processes_pid_nice.append(
-                    (int(line.split()[0]), int(line.split()[2])))
+                    (int(line.split()[0]), int(line.split()[2]), line.split()[4]))
         return job_processes_pid_nice

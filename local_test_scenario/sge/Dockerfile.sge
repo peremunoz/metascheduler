@@ -2,6 +2,7 @@ FROM ensemblorg/ensembl-hive-sge
 
 RUN sudo useradd -m metascheduler \
     && echo "metascheduler:metascheduler" | sudo chpasswd \
+    && sudo usermod -aG sudo metascheduler \
     && sudo mkdir /home/metascheduler/.ssh \
     && sudo chown metascheduler:metascheduler /home/metascheduler/.ssh \
     && sudo chmod 700 /home/metascheduler/.ssh \
@@ -11,6 +12,14 @@ RUN sudo useradd -m metascheduler \
     && sudo sed -i 's/#AuthorizedKeysFile/AuthorizedKeysFile/' /etc/ssh/sshd_config
 
 COPY id_ed25519.pub /home/metascheduler/.ssh/authorized_keys
+
+COPY test_job.c /home/metascheduler/test_job.c
+COPY test_job100000000.sh /home/metascheduler/test_job100000000.sh
+COPY test_job1000000000.sh /home/metascheduler/test_job1000000000.sh
+COPY test_job10000000000.sh /home/metascheduler/test_job10000000000.sh
+COPY test_job100000000000.sh /home/metascheduler/test_job100000000000.sh
+
+# export SGE_ROOT=/opt/sge/ && /opt/sge/bin/lx-amd64/qconf -mu arusers
 
 EXPOSE 22
 
