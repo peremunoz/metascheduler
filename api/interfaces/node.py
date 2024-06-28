@@ -31,7 +31,7 @@ class Node:
         '''
         return f'ID: {self.id_}, IP: {self.ip}, Port: {self.port}'
 
-    def send_command(self, command: str) -> str:
+    def send_command(self, command: str, critical=True) -> str:
         '''
         Send a command to the node.
 
@@ -53,7 +53,9 @@ class Node:
                 result = conn.run(command, hide=True)
                 return result.stdout
         except Exception as e:
-            raise e
+            if critical:
+                raise e
+            return str(e)
 
     def send_command_async(self, command: str) -> None:
         '''
