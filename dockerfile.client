@@ -1,0 +1,18 @@
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip
+
+WORKDIR /client
+
+COPY client .
+
+RUN pip3 install pipenv \
+    && pipenv install
+
+ENV PYTHONPATH=..
+ENV API_IP=
+ENV API_PORT=
+
+CMD [ "pipenv", "run", "python3", "main.py", "/", "bash" ]
