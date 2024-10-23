@@ -1,0 +1,1 @@
+The CLI application has been developed using "Typer", a library that allows the creation of CLI applications in Python. The application has been divided into different commands, each one with its own functionality. You can find the list of commands and their description by executing the command `main.py --help`.
