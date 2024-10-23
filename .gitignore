@@ -161,3 +161,4 @@ cython_debug/
 #.idea/
 
 api/config/config.json
+/api/id_ed25519
