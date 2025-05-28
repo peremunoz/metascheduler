@@ -18,3 +18,13 @@ Each of the components has its own installation process, so please refer to the 
 The API is a RESTful API, so it can be used with any HTTP client. The client is a command-line interface that allows the user to interact with the API. To test it in a local environment, you have to set up the API with the master nodes of the cluster frameworks you want to use, using the configuration file.
 
 In the folder `local_test_scenario` you can find two folders, one for each cluster framework, with the docker-compose files to set up a local environment to test the metascheduler. The SGE cluster framework is already set up with a master node and a worker node, and the Hadoop cluster framework is set up with all the necessary nodes, but you will face some issues related to the Hadoop users permissions. Inside the `local_test_scenario/hadoop` folder, you can find a init_command.txt file with the commands you have to run to set up the Hadoop users, to allow the API to interact with the Hadoop cluster.
+
+### Generate the test files
+
+The test scenario can be tested with the `test.sh` file, which sends different jobs to the metascheduler queue using the metascheduler client. The test files and test jobs can be user-defined, but to test the performance of the metascheduler during the thesis, in the SGE it has been used the `N` job, and in the Hadoop the `wordcount problem`.
+
+To generate the words files I used the following tool:
+
+`pwgen -A 8 1000 > words1000.txt`
+
+And to generate the `test_jobXXXXX.sh` I used the well-known problem `sum of squares` with different values of `n`.
